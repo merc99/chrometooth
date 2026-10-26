@@ -397,7 +397,7 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
 .step button:hover{background:var(--panel2)}
 .step output{min-width:46px;text-align:center;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
 
-/* activity */
+/* decision log */
 .act{list-style:none;margin:0;padding:0;max-height:340px;overflow:auto}
 .act li{display:grid;grid-template-columns:44px auto 1fr;gap:10px;align-items:baseline;padding:9px 0;border-top:1px solid var(--hair);font-size:14px}
 .act li:first-child{border-top:0}
@@ -609,6 +609,20 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
 .allclear .btn{width:100%}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}}
+/* activity view: same frame as the overview grid */
+.actv{max-width:1440px;margin:0 auto;padding:22px clamp(14px,3vw,28px) 28px;display:flex;flex-direction:column;gap:14px}
+.actv .greet{margin:6px 2px 0}
+/* view switch (Overview | Activity) */
+.vtabs{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--hair2);border-radius:999px;background:var(--panel)}
+.vtabs a{display:inline-flex;align-items:center;height:28px;padding:0 14px;border-radius:999px;font-size:13.5px;font-weight:500;color:var(--mute);transition:background .2s,color .2s}
+.vtabs a:hover{color:var(--ink)}
+.vtabs a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+@media (max-width:620px){.topbar .in{flex-wrap:wrap}.vtabs{order:10;flex:1 0 100%;justify-content:stretch}.vtabs a{flex:1;justify-content:center;height:32px}}
+/* confirm dialog: the report modal, sized for a sentence */
+.mbox-sm{width:min(100%,440px)}
+.cf-body{padding:16px 22px 4px;font-size:14.5px;color:var(--ink2)}
+.cf-body p{margin:0 0 12px}
+.cf-body ul{margin:0 0 12px;padding-left:18px;font-family:var(--mono);font-size:12.5px;color:var(--ink);display:grid;gap:4px;max-height:180px;overflow:auto}
 </style>
 </head>
 <body>
@@ -727,6 +741,7 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
   <header class="topbar"><div class="in">
     <a href="#top" class="brand" aria-label="Back to site"><svg class="wm" viewBox="0 0 1007.5 100.0"><use href="#wm"/></svg></a>
     <span class="pill" aria-live="polite"><span class="dot" id="sdot"></span><span id="stext">3 threats need you</span></span>
+    <nav class="vtabs" aria-label="Dashboard views"><a href="#app" data-view="overview">Overview</a><a href="#app/activity" data-view="activity">Activity</a></nav>
     <span class="sp"></span>
     <button class="btn btn-ink btn-sm" id="rescan">Rescan</button>
     <button class="icon-btn" data-theme-toggle aria-label="Switch theme"></button>
@@ -798,7 +813,7 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
     </section>
 
     <section class="panel p-activity" aria-labelledby="ac-h">
-      <div class="ph"><h2 id="ac-h">Activity</h2><button class="btn btn-line btn-sm" id="repBtn">Write incident report</button></div>
+      <div class="ph"><h2 id="ac-h">Decision log</h2><button class="btn btn-line btn-sm" id="repBtn">Write incident report</button></div>
       <ul class="act" id="actList"></ul>
     </section>
 
@@ -820,14 +835,25 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
       <svg class="plot" id="scatter" height="196" role="img" aria-label="Events by hour and severity"></svg>
     </section>
   </main>
+
+  <section class="actv" id="actv" aria-labelledby="av-h" hidden>
+    <div class="greet"><div><h1 id="av-h">Activity</h1><p>Every connection, lookup and block on your network in the last 24 hours.</p></div></div>
+  </section>
 </div>
 
 <div class="scrim" id="scrim"></div>
 <div class="modal" id="repModal" role="dialog" aria-modal="true" aria-labelledby="repTitle">
   <div class="mbox">
-    <header><div><h2 id="repTitle">Incident report</h2><p>Drafted from your activity log and the evidence Chrometooth cited.</p></div><button class="icon-btn" id="repClose" aria-label="Close report"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+    <header><div><h2 id="repTitle">Incident report</h2><p>Drafted from your decision log and the evidence Chrometooth cited.</p></div><button class="icon-btn" id="repClose" aria-label="Close report"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
     <label for="repTxt" class="sr">Report text</label><textarea id="repTxt" readonly></textarea>
     <div class="foot"><button class="btn btn-line" id="repClose2">Close</button><button class="btn btn-ink" id="repCopy">Copy report</button></div>
+  </div>
+</div>
+<div class="modal" id="cfModal" role="alertdialog" aria-modal="true" aria-labelledby="cfTitle" aria-describedby="cfText">
+  <div class="mbox mbox-sm">
+    <header><div><h2 id="cfTitle">Are you sure?</h2></div><button class="icon-btn" data-cf="no" aria-label="Cancel"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+    <div class="cf-body" id="cfText"></div>
+    <div class="foot"><button class="btn btn-line" data-cf="no">Cancel</button><button class="btn btn-ink" data-cf="yes" id="cfYes">Confirm</button></div>
   </div>
 </div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle">
@@ -871,9 +897,9 @@ function toast(msg){const t=document.createElement('div');t.className='toast';t.
 
 /* routing */
 function route(){
-  const h=location.hash.slice(1), app=h==='app';
+  const h=location.hash.slice(1), app=h==='app'||h.startsWith('app/');
   $('#app').hidden=!app; $('#site').hidden=app;
-  if(app){window.scrollTo(0,0);bootApp();}
+  if(app){window.scrollTo(0,0);bootApp();setView(h==='app/activity'?'activity':'overview');}
   else if(h){const el=document.getElementById(h);if(el)requestAnimationFrame(()=>el.scrollIntoView());}
 }
 addEventListener('hashchange',route);
@@ -1140,7 +1166,7 @@ $('#rulesList').addEventListener('click',e=>{
   else return;
   renderRules();renderQueue();if(drawerT&&$('#drawer').classList.contains('on'))renderDrawer();});
 
-/* ===== activity ===== */
+/* ===== decision log ===== */
 let acts=[];
 const T0=Date.now();const hhmm=()=>{const m=14*60+32+Math.floor((Date.now()-T0)/60000);return String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};
 function audit(who,text,time){acts.unshift({who,text,time:time||hhmm()});renderActs();}
@@ -1464,7 +1490,7 @@ function buildReport(){const now=new Date();const L=[];
   if(threats.length){L.push('STILL OPEN');threats.forEach((t,i)=>L.push(item(t,i),''));}
   L.push('PRIVACY',...PRIV.map(p=>`- ${DEV[p.dev].name}: ${p.title.toLowerCase()} (${p.risk.toLowerCase()} risk). ${pvState[p.key].blocked?'Blocked at the router.':'Still allowed.'}`),'');
   L.push('RULES IN EFFECT',`- Review before any fix: ${rules.review?'on':'off'}`,`- Minimum AI confidence: ${rules.conf}%`,`- Flag unsigned programs: ${rules.unsigned?'on':'off'}`,`- Never block my own network: ${rules.local?'on':'off'}`,`- Login attempt limit: ${rules.limit} a minute`,'');
-  L.push('ACTIVITY LOG');[...acts].reverse().forEach(a=>L.push(`${a.time}  ${a.who==='ai'?'Chrometooth':a.who==='you'?'You':'Rule'}: ${a.text}`));
+  L.push('DECISION LOG');[...acts].reverse().forEach(a=>L.push(`${a.time}  ${a.who==='ai'?'Chrometooth':a.who==='you'?'You':'Rule'}: ${a.text}`));
   return L.join('\n');}
 let repFrom=null;
 $('#repBtn').onclick=()=>{repFrom=document.activeElement;$('#repTxt').value=buildReport();$('#repModal').classList.add('on');setTimeout(()=>$('#repCopy').focus(),60);audit('you','Drafted an incident report');};
@@ -1473,8 +1499,9 @@ $('#repClose').onclick=closeRep;$('#repClose2').onclick=closeRep;$('#repModal').
 $('#repCopy').onclick=async()=>{const v=$('#repTxt').value;try{await navigator.clipboard.writeText(v);toast('Report copied');}catch(e){const ta=$('#repTxt');ta.focus();ta.select();try{document.execCommand('copy');toast('Report copied');}catch(_){toast('Select the text and copy it');}}};
 
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){if($('#repModal').classList.contains('on'))closeRep();else if($('#drawer').classList.contains('on'))closeDrawer();else $('#allclear').classList.remove('on');}
+  if(e.key==='Escape'){if($('#cfModal').classList.contains('on'))closeConfirm(false);else if($('#repModal').classList.contains('on'))closeRep();else if($('#drawer').classList.contains('on'))closeDrawer();else $('#allclear').classList.remove('on');}
   if(e.key==='/'&&!$('#app').hidden&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)){e.preventDefault();$('#tin').focus();}
+  if(e.key==='Tab'&&$('#cfModal').classList.contains('on')){const f=$$('#cfModal button'),a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}}
   if(e.key==='Tab'&&$('#repModal').classList.contains('on')){const f=$$('#repModal button, #repModal textarea'),a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}}
   if(e.key==='Tab'&&$('#allclear').classList.contains('on')){e.preventDefault();$('#acOk').focus();}
   if(e.key==='Tab'&&$('#drawer').classList.contains('on')){const f=$$('#drawer button:not([disabled]), #drawer [tabindex="0"]'),a=f[0],z=f[f.length-1];
@@ -1606,6 +1633,20 @@ function renderAll(){seed();renderEnamel();renderJaw();renderQueue();$("#vecs").
 function seedActs(){acts=[];const s=THREATS0.map(th=>['ai',`Flagged ${th.name} on ${DEV[th.dev].name} (${th.sev}, ${th.conf}% confidence)`,th.seen]);s.push(['ai','Screened a robocall from (888) 555-0132 and blocked it','13:58'],['ai','Filtered a fake job offer from hr@globalhire-remote.co','14:05'],['ai','Privacy audit found 5 devices sending data home, including the living room TV and the Echo Dot','14:30'],['ai','Scan finished. 3 threats need your review.','14:32']);s.sort((x,y)=>x[2].localeCompare(y[2])).forEach(([w,tx,tm])=>audit(w,tx,tm));}
 function resetDemo(){SH=SHIELDS0();renderShields();pvReset();renderPriv();threats=THREATS0.slice();done=[];reviews={};fixed=new Set();selDev=null;nextId=4;rules={...RULES0};renderRules();seedActs();renderAll();}
 function bootApp(){if(booted)return;booted=true;threats=THREATS0.slice();renderRules();renderShields();renderPriv();seedActs();renderAll();out.replaceChildren();scan();}
+
+/* ===== confirm dialog (built on the report modal) ===== */
+let cfFrom=null,cfDone=null;
+function confirmAct({title,html,yes},onYes){cfFrom=document.activeElement;cfDone=onYes;$('#cfTitle').textContent=title;$('#cfText').innerHTML=html;$('#cfYes').textContent=yes;
+  $('#cfModal').classList.add('on');setTimeout(()=>$('#cfModal [data-cf="no"].btn').focus(),60);}
+function closeConfirm(ok){$('#cfModal').classList.remove('on');const f=cfDone;cfDone=null;cfFrom&&cfFrom.focus&&cfFrom.focus({preventScroll:true});if(ok&&f)f();}
+$('#cfModal').addEventListener('click',e=>{const b=e.target.closest('[data-cf]');if(b)return closeConfirm(b.dataset.cf==='yes');if(e.target.id==='cfModal')closeConfirm(false);});
+
+/* ===== views: Overview | Activity ===== */
+let view='overview';
+const AV={show(){}};
+function setView(v){view=v;$('.dash').hidden=v!=='overview';$('#actv').hidden=v!=='activity';
+  $$('.vtabs a').forEach(a=>{if(a.dataset.view===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+  if(v==='activity')AV.show();}
 
 route();
 })();
