@@ -2,7 +2,7 @@
 
 AI threat detection you can actually check. An interactive product prototype by [Ben Woods](https://benwoods.art).
 
-**Live:** https://chrometooth.vercel.app <!-- update after first deploy -->
+**Live:** https://chrometooth.vercel.app
 
 ![Chrometooth landing page](docs/hero.png)
 
