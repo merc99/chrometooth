@@ -612,6 +612,166 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
 /* activity view: same frame as the overview grid */
 .actv{max-width:1440px;margin:0 auto;padding:22px clamp(14px,3vw,28px) 28px;display:flex;flex-direction:column;gap:14px}
 .actv .greet{margin:6px 2px 0}
+/* ===== activity view ===== */
+.actv{--av-allowed:color-mix(in srgb,var(--faint) 42%,transparent);height:calc(100dvh - 62px)}
+.av-sum{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:18px 36px;align-items:stretch;padding:14px 20px}
+@media (min-width:1280px){.av-tools{grid-template-columns:minmax(320px,1fr) auto;align-items:center}}
+.av-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 24px;margin:0;align-content:center}
+.av-kpis b{font-size:24px}
+.av-top{grid-column:1/-1;min-width:0}
+.av-top b{display:grid;font-size:inherit;letter-spacing:0;line-height:1.35;min-width:0}
+.av-top .dom{font-size:15px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.av-top small{font-size:12.5px;font-weight:400;color:var(--mute);font-family:var(--ui);margin:0}
+.av-chart{min-width:0}
+.av-chart .ph{margin-bottom:10px}
+.av-ch{margin:0;font-size:14.5px;font-weight:600}
+.av-bars{display:flex;align-items:flex-end;gap:3px;height:68px}
+.hb{flex:1;min-width:0;height:100%;border:0;padding:0;background:none;display:flex;align-items:flex-end;border-radius:5px}
+.hb .st{display:flex;flex-direction:column-reverse;width:100%;min-height:2px;border-radius:3px 3px 1px 1px;overflow:hidden;transition:height .25s ease,opacity .2s}
+.hb i{display:block;flex:0 0 0;flex-basis:0;min-height:0}
+.hb .a{background:var(--av-allowed)}.hb .f{background:var(--high)}.hb .b{background:var(--ok)}
+.hb:hover{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.hb[aria-pressed="true"]{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.av-bars.has-on .hb:not([aria-pressed="true"]) .st{opacity:.35}
+.hb:focus-visible{outline-offset:1px}
+.av-axis{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums}
+.av-chart .legend{margin-top:8px}
+@media (max-width:900px){.av-sum{grid-template-columns:1fr}}
+
+.av-main{display:flex;flex-direction:column;flex:1 1 0;padding:0;min-height:480px}
+.av-tools{display:grid;gap:10px;padding:14px 16px 12px}
+.av-search{position:relative;display:flex;align-items:center;gap:10px;height:42px;padding:0 12px;border:1px solid var(--hair2);border-radius:12px;background:var(--panel2);transition:border-color .2s}
+.av-search:focus-within{border-color:var(--ink)}
+.av-search>svg{width:16px;height:16px;flex:none;fill:none;stroke:var(--mute);stroke-width:1.8;stroke-linecap:round}
+.av-search input{flex:1;min-width:0;height:100%;border:0;background:none;outline:none;font-family:var(--mono);font-size:13px;color:var(--ink)}
+.av-search input::placeholder{color:var(--faint)}
+.av-search kbd{font-family:var(--mono);font-size:12px;color:var(--faint);border:1px solid var(--hair2);border-radius:6px;padding:0 7px;line-height:20px}
+.av-sug{position:absolute;z-index:30;left:-1px;right:-1px;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;background:var(--panel);border:1px solid var(--hair2);border-radius:12px;box-shadow:0 20px 40px -20px rgba(13,14,18,.35);max-height:316px;overflow:auto}
+.av-sug li{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:8px 10px;border-radius:8px;font-family:var(--mono);font-size:13px;cursor:pointer}
+.av-sug li small{font-family:var(--ui);font-size:12.5px;color:var(--mute);white-space:nowrap}
+.av-sug li[aria-selected="true"]{background:var(--panel2);box-shadow:inset 2px 0 0 var(--ink)}
+.av-sug li:hover{background:var(--panel2)}
+.av-chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.chipset{display:inline-flex;flex-wrap:wrap;gap:4px}
+.fchip{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;border:1px solid var(--hair2);border-radius:999px;background:var(--panel);font-size:13px;color:var(--ink2);white-space:nowrap;transition:background .15s,color .15s,border-color .15s}
+.fchip:hover{border-color:var(--faint);color:var(--ink)}
+.fchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.fchip>i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.fchip.tok{font-family:var(--mono);font-size:12.5px;border-style:dashed}
+.fchip svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.pop-wrap{position:relative}
+.pop{position:absolute;z-index:30;top:calc(100% + 6px);left:0;min-width:240px;max-height:min(420px,70vh);overflow:auto;padding:8px;background:var(--panel);border:1px solid var(--hair2);border-radius:14px;box-shadow:0 20px 40px -20px rgba(13,14,18,.35)}
+.av-row2 .pop{left:auto;right:0}
+.pop-h{margin:4px 8px 6px;font-size:12.5px;font-weight:600;color:var(--mute)}
+.pop-note{margin:4px 8px 10px;font-size:13.5px;color:var(--mute)}
+.ck{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 8px;border-radius:8px;font-size:14px;cursor:pointer}
+.ck:hover{background:var(--panel2)}
+.ck small{margin-left:auto;color:var(--mute);font-size:12.5px}
+.ck input,.av-grid input[type=checkbox]{width:16px;height:16px;margin:0;accent-color:var(--ink);cursor:pointer}
+.vw{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:2px}
+.vw li{display:flex;align-items:center;gap:6px}
+.vw-a{flex:1;min-width:0;display:grid;text-align:left;gap:1px;border:0;background:none;padding:7px 8px;border-radius:8px;font-size:14px}
+.vw-a:hover,.vw-a[aria-current="true"]{background:var(--panel2)}
+.vw-a small{font-family:var(--mono);font-size:12px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vw-x{width:32px;height:32px}
+.vw-save{border-top:1px solid var(--hair);padding:10px 8px 4px;display:grid;gap:6px}
+.vw-save label{font-size:12.5px;font-weight:600;color:var(--mute)}
+.vw-save div{display:flex;gap:6px}
+.vw-save input{flex:1;min-width:0;height:36px;border:1px solid var(--hair2);border-radius:999px;background:var(--panel2);padding:0 12px;font-size:14px;outline:none}
+.vw-save input:focus{border-color:var(--ink)}
+.vw-save .btn:disabled,.vw-save input:disabled{opacity:.5;cursor:not-allowed}
+.av-bar2{position:relative;height:48px;border-top:1px solid var(--hair)}
+.av-row2,.av-bulk{position:absolute;inset:0 16px;display:flex;align-items:center;gap:10px}
+.av-bulk b{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.av-count{font-size:13.5px;color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap}
+.av-sortm{display:none;align-items:center;gap:6px;font-size:13px;color:var(--mute)}
+.av-sortm select{height:36px;border:1px solid var(--hair2);border-radius:999px;background:var(--panel);padding:0 10px;font:inherit;font-size:13.5px;color:var(--ink)}
+.seg{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--hair2);border-radius:999px;background:var(--panel)}
+.seg button{height:28px;padding:0 12px;border:0;border-radius:999px;background:none;font-size:13px;color:var(--mute)}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+/* the table: sticky header and first columns, windowed rows */
+.av-scroll{position:relative;flex:1 1 0;min-height:0;overflow:auto;overscroll-behavior:contain;border-top:1px solid var(--hair);border-radius:0 0 16px 16px;scrollbar-color:var(--hair2) transparent}
+.av-grid{--rh:40px;min-width:var(--minw);font-size:13.5px;color:var(--ink2)}
+.av-hr,.av-r{display:grid;grid-template-columns:var(--cols);align-items:center}
+.av-hr{position:sticky;top:0;z-index:5;height:38px;background:var(--panel2);border-bottom:1px solid var(--hair2)}
+.av-body{position:relative}
+.av-r{position:absolute;left:0;right:0;height:var(--rh);--rb:var(--panel);background:var(--rb);border-bottom:1px solid var(--hair);cursor:pointer;outline:none}
+.av-r:hover{--rb:var(--panel2)}
+.av-r.sel{--rb:color-mix(in srgb,var(--ca) 14%,var(--panel))}
+.av-r.sel:hover{--rb:color-mix(in srgb,var(--ca) 19%,var(--panel))}
+.av-r:focus-visible::after{content:"";position:absolute;inset:0;z-index:4;border:2px solid var(--ink);border-radius:4px;pointer-events:none}
+.av-r.flash::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:color-mix(in srgb,var(--high) 16%,transparent);animation:avflash 1.8s ease forwards}
+@keyframes avflash{0%,35%{opacity:1}100%{opacity:0}}
+.c{min-width:0;padding:0 10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.c-sel,.c-time{position:sticky;z-index:2;align-self:stretch;display:flex;align-items:center;background:var(--rb)}
+.c-sel{left:0;justify-content:center;padding:0}
+.c-time{left:40px;border-right:1px solid var(--hair);font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums}
+.av-hr .c-sel,.av-hr .c-time{background:var(--panel2);z-index:6}
+.av-hr .c{font-size:12.5px;font-weight:600;color:var(--mute)}
+.av-hr .hl{display:inline-flex;align-items:center;gap:4px;border:0;background:none;padding:6px 0;font:inherit;color:inherit;white-space:nowrap}
+.av-hr button.hl:hover{color:var(--ink)}
+.av-hr [aria-sort] .hl{color:var(--ink)}
+.av-hr .ar{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:transform .2s,opacity .2s}
+.av-hr .hl:hover .ar{opacity:.45}.av-hr .ar.on{opacity:1}.av-hr .ar.up{transform:rotate(180deg)}
+.c.num,.av-hr .c.num{text-align:right;font-variant-numeric:tabular-nums}
+.av-hr .c.num .hl{flex-direction:row-reverse}
+.c .dom,.av-r .mono{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+.c-dom{display:flex;align-items:center;gap:6px}
+.c-dom .dom{overflow:hidden;text-overflow:ellipsis}
+.mk{width:12px;height:12px;flex:none;fill:none;stroke:var(--mute);stroke-width:1.3;stroke-linejoin:round;vertical-align:-1px;margin-left:6px}
+.dir{display:inline-flex;align-items:center;gap:5px}
+.dir svg{width:12px;height:12px;fill:none;stroke:var(--mute);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.spk{display:block;width:64px;height:16px;fill:none;stroke:var(--faint);stroke-width:1.3;stroke-linejoin:round;overflow:visible}
+.av-r.fl .spk{stroke:var(--high)}
+.svm{display:inline-flex;align-items:center;gap:7px;font-size:13px}
+.svm i{width:3px;height:14px;border-radius:2px;background:var(--c)}
+.svm.none{color:var(--faint)}
+.av-grid .sev{height:22px}
+.av-grid.compact{font-size:13px}
+.av-grid.compact .sev{height:18px;font-size:11.5px;padding:0 7px}
+.av-grid.compact .c-time,.av-grid.compact .dom{font-size:12px}
+.av-empty{position:absolute;inset:38px 0 0;display:grid;place-items:start center;padding:32px 16px}
+.av-empty .empty{width:min(100%,480px);background:var(--panel)}
+.av-empty .ex{justify-content:center;margin:14px 0 0}
+
+/* phones: each row becomes a card with device, destination and verdict */
+.av-grid.cards{min-width:0}
+.av-grid.cards .av-head{display:none}
+.av-r.card{grid-template-columns:44px minmax(0,1fr);align-items:stretch}
+.av-r.card .c-sel{position:static}
+.card-b{display:grid;align-content:center;gap:4px;padding:10px 14px 10px 0;white-space:normal}
+.card-b .l1{display:flex;justify-content:space-between;gap:10px;font-size:14px;color:var(--ink)}
+.card-b .l1 b{font-weight:600}
+.card-b time{font-family:var(--mono);font-size:12px;color:var(--mute)}
+.card-b .l2{display:flex;align-items:center;min-width:0}
+.card-b .l2 .dom{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-b .l3{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--mute);min-width:0}
+.card-b .l3 .num{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:760px){
+  .av-sum{padding:16px}.av-kpis{gap:12px 16px}.av-kpis b{font-size:21px}
+  .av-chart .ph .meta{display:none}
+  .av-chips{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px;padding:2px 16px 4px;scrollbar-width:none}
+  .av-chips::-webkit-scrollbar{display:none}
+  .av-search kbd,.seg,.av-colw{display:none}
+  .av-sortm{display:inline-flex}
+  .av-bar2{height:56px}
+  .av-bulk{gap:6px}.av-bulk .btn{padding:0 10px;font-size:13px}.av-bulk [data-bulk="trust"]{display:none}
+  .actv{height:auto}.av-main{flex:none;height:78dvh;min-height:440px}
+  .pop{position:fixed;left:12px!important;right:12px!important;top:auto;bottom:12px;min-width:0}
+}
+
+/* drawer: source lines that link back to rows */
+.evbox .ln{display:block;border-radius:4px;margin:0 -6px;padding:0 6px}
+.evbox .ln.has-row{cursor:pointer}
+.evbox .ln.has-row:hover{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.evbox .ln.hit{background:color-mix(in srgb,var(--high) 14%,transparent);box-shadow:inset 2px 0 0 var(--high)}
+.sec-h .linkbtn{padding:0}
+.drawer .spk-lg{display:block;width:100%;height:56px;fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linejoin:round}
+.drawer .spk-lg .ar{fill:color-mix(in srgb,var(--ink) 8%,transparent);stroke:none}
+.chkinfo{font-size:13px;color:var(--mute)}
+
 /* view switch (Overview | Activity) */
 .vtabs{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--hair2);border-radius:999px;background:var(--panel)}
 .vtabs a{display:inline-flex;align-items:center;height:28px;padding:0 14px;border-radius:999px;font-size:13.5px;font-weight:500;color:var(--mute);transition:background .2s,color .2s}
@@ -837,7 +997,62 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
   </main>
 
   <section class="actv" id="actv" aria-labelledby="av-h" hidden>
-    <div class="greet"><div><h1 id="av-h">Activity</h1><p>Every connection, lookup and block on your network in the last 24 hours.</p></div></div>
+    <div class="greet"><div><h1 id="av-h">Activity</h1><p>Every connection, lookup and block on your network, 15:00 yesterday to now.</p></div></div>
+
+    <section class="panel av-sum" aria-labelledby="avs-h">
+      <h2 id="avs-h" class="sr">Summary for the current filters</h2>
+      <div class="kpis av-kpis">
+        <div><span>Connections</span><b id="avKc">0</b></div>
+        <div><span>Data sent</span><b id="avKs">0</b></div>
+        <div><span>Blocked</span><b id="avKb">0</b></div>
+        <div class="av-top"><span>Top destination</span><b id="avKt"></b></div>
+      </div>
+      <div class="av-chart">
+        <div class="ph"><h3 class="av-ch">Traffic by hour</h3><span class="meta">Select an hour to filter the table</span></div>
+        <div class="av-bars" id="avBars" role="group" aria-label="Traffic by hour. Use the arrow keys to move between hours and Enter to filter the table to one."></div>
+        <div class="av-axis" id="avAxis" aria-hidden="true"></div>
+        <div class="legend"><span><i style="--c:var(--av-allowed)"></i>Allowed</span><span><i style="--c:var(--high)"></i>Flagged</span><span><i style="--c:var(--ok)"></i>Blocked</span></div>
+      </div>
+    </section>
+
+    <section class="panel av-main" aria-label="Activity log">
+      <div class="av-tools">
+        <div class="av-search" role="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+          <label for="avQ" class="sr">Filter the activity log</label>
+          <input id="avQ" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="avSug" aria-describedby="avQHelp" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Filter, like device:tv verdict:blocked country:CN">
+          <kbd aria-hidden="true">/</kbd>
+          <ul class="av-sug" id="avSug" role="listbox" aria-label="Suggestions" hidden></ul>
+          <span class="sr" id="avQHelp">Type key:value filters such as device:tv or verdict:blocked. A minus excludes, like -verdict:allowed. Suggestions appear as you type.</span>
+        </div>
+        <div class="av-chips" id="avChips"></div>
+      </div>
+      <div class="av-bar2">
+        <div class="av-row2" id="avRow2">
+          <span class="av-count" id="avCount"></span>
+          <span class="sp"></span>
+          <label class="av-sortm">Sort <select id="avSortM"><option value="time:-1">Newest first</option><option value="time:1">Oldest first</option><option value="sent:-1">Most data sent</option><option value="sev:-1">Most severe</option><option value="device:1">Device</option></select></label>
+          <div class="seg" id="avDensity" role="group" aria-label="Row density"><button data-d="comfortable" aria-pressed="true">Comfortable</button><button data-d="compact" aria-pressed="false">Compact</button></div>
+          <div class="pop-wrap"><button class="btn btn-line btn-sm" id="avViewsB" aria-haspopup="true" aria-expanded="false" aria-controls="avViews">Views</button><div class="pop" id="avViews" hidden></div></div>
+          <div class="pop-wrap av-colw"><button class="btn btn-line btn-sm" id="avColsB" aria-haspopup="true" aria-expanded="false" aria-controls="avCols">Columns</button><div class="pop" id="avCols" hidden></div></div>
+        </div>
+        <div class="av-bulk" id="avBulk" role="region" aria-label="Bulk actions" hidden>
+          <b id="avSelN">0 selected</b><span class="sp"></span>
+          <button class="btn btn-ink btn-sm" data-bulk="block" id="avBlock">Block destination</button>
+          <button class="btn btn-line btn-sm" data-bulk="trust">Mark as trusted</button>
+          <button class="btn btn-line btn-sm" data-bulk="csv">Export CSV</button>
+          <button class="icon-btn" data-bulk="clear" aria-label="Clear the selection"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+      </div>
+      <div class="av-scroll" id="avScroll">
+        <div class="av-grid" id="avGrid" role="grid" aria-label="Activity log" aria-multiselectable="true" aria-rowcount="1">
+          <div class="av-head" role="rowgroup"><div class="av-hr" role="row" aria-rowindex="1" id="avHead"></div></div>
+          <div class="av-body" id="avBody" role="rowgroup"></div>
+        </div>
+        <div class="av-empty" id="avEmpty" hidden></div>
+      </div>
+      <p class="sr" id="avLive" aria-live="polite"></p>
+    </section>
   </section>
 </div>
 
@@ -1144,7 +1359,7 @@ function ruleChecks(t){const out=[],n=Object.keys(rvw(t)).length;
     if(rules.local)out.push(local?{st:'block',name:'Never block my own network',note:`${t.ip} is on your network, so Chrometooth won’t block it.`}:{st:'pass',name:'Never block my own network',note:`${t.ip} is outside your network. Safe to block.`});}
   if(t.rate)out.push(t.rate>rules.limit?{st:'pass',name:'Login attempt limit',note:`${t.rate} attempts a minute is over your limit of ${rules.limit}.`}:{st:'block',name:'Login attempt limit',note:`${t.rate} a minute is under your limit of ${rules.limit}, so blocking isn’t allowed. Lower the limit to act.`});
   return out;}
-function stateOf(t){const rc=ruleChecks(t);if(rc.some(r=>r.st==='block'))return'blocked';if(rules.review&&!reviewed(t))return'review';return'ready';}
+function stateOf(t){if(t.gen)return rules.review&&!reviewed(t)?'review':'ready';const rc=ruleChecks(t);if(rc.some(r=>r.st==='block'))return'blocked';if(rules.review&&!reviewed(t))return'review';return'ready';}
 const canAct=t=>stateOf(t)==='ready';
 function renderRules(){
   const sw=(k,on)=>`<button class="sw" role="switch" aria-checked="${on}" data-rule="${k}" aria-label="${k}"></button>`;
@@ -1438,25 +1653,29 @@ $('#shields').addEventListener('click',e=>{const s=e.target.closest('[data-sh]')
 
 /* ===== drawer ===== */
 let lastFocus=null,drawerT=null;
-function openDrawer(t){lastFocus=document.activeElement;drawerT=t;$('#drawer').dataset.sel='';renderDrawer();
-  $('#drawer').classList.add('on');$('#scrim').classList.add('on');setTimeout(()=>{const b=$('#dBody .vb button')||$('#dFoot .btn-ink');b&&b.focus();},80);
-  audit('you',`Opened the evidence for ${t.name}`);}
-function renderDrawer(){const t=drawerT;if(!t)return;const body=$('#dBody'),keep=body.scrollTop,sel=$('#drawer').dataset.sel;
-  const rc=ruleChecks(t),st=stateOf(t),n=Object.keys(rvw(t)).length;
+function openDrawer(t,o={}){lastFocus=document.activeElement;drawerT=t;$('#drawer').dataset.sel='';$('#drawer').dataset.line=o.line??'';renderDrawer();
+  $('#drawer').classList.add('on');$('#scrim').classList.add('on');setTimeout(()=>{const b=t.conn?$('#dFoot .btn-line'):$('#dBody .vb button')||$('#dFoot .btn-ink:not([disabled])')||$('#dClose');b&&b.focus();const L=$('#dBody .ln.hit');L&&L.scrollIntoView({block:'nearest'});},80);
+  if(!t.conn)audit('you',t.gen?`Opened the checks for ${t.name.toLowerCase()}`:`Opened the evidence for ${t.name}`);}
+function renderDrawer(){const t=drawerT;if(!t)return;if(t.conn)return renderConn(t);const body=$('#dBody'),keep=body.scrollTop,sel=$('#drawer').dataset.sel;
+  const rc=t.gen?[]:ruleChecks(t),st=stateOf(t),n=Object.keys(rvw(t)).length;
   $('#dSev').innerHTML=sevPill(t.sev)+(t.ai?'<span class="ai-tag">From intake</span>':'');$('#dTitle').textContent=t.name;
   body.innerHTML=`<p class="sum">${esc(t.sum)}</p>
-    <dl><dt>Device</dt><dd>${DEV[t.dev].name} (${DEV[t.dev].ip})</dd><dt>Vector</dt><dd>${VEC[t.vec]}</dd><dt>First seen</dt><dd>Today at ${t.seen}</dd><dt>Confidence</dt><dd><div class="conf"><div class="bar"><i style="--v:${t.conf}%"></i></div>${t.conf}%</div></dd></dl>
-    <div><div class="sec-h"><h3>Why Chrometooth flagged it</h3><span class="chk-row">${n} of ${t.why.length} checked${t.why.some((_,i)=>rvw(t)[i]!=='ok')?'<button class="linkbtn" data-all>Confirm all</button>':''}</span></div>
+    ${t.gen?`<dl><dt>Device</dt><dd>${DEV[t.dev].name} (${DEV[t.dev].ip})</dd><dt>Destination</dt><dd>${esc(t.dom)} (${t.cc})</dd><dt>First seen</dt><dd>${t.seen}</dd><dt>How it was flagged</dt><dd>Simple checks on the last 24 hours of traffic. No AI analysis.</dd></dl>`:`<dl><dt>Device</dt><dd>${DEV[t.dev].name} (${DEV[t.dev].ip})</dd><dt>Vector</dt><dd>${VEC[t.vec]}</dd><dt>First seen</dt><dd>Today at ${t.seen}</dd><dt>Confidence</dt><dd><div class="conf"><div class="bar"><i style="--v:${t.conf}%"></i></div>${t.conf}%</div></dd></dl>`}
+    <div><div class="sec-h"><h3>${t.gen?'Checks that matched':'Why Chrometooth flagged it'}</h3><span class="chk-row">${n} of ${t.why.length} checked${t.why.some((_,i)=>rvw(t)[i]!=='ok')?'<button class="linkbtn" data-all>Confirm all</button>':''}</span></div>
       <div class="rsns">${t.why.map(([a,b],i)=>`<div class="rsn${sel===String(i)?' on':''}" data-r="${i}" style="--mc:${CAT[i%5]}" tabindex="0" role="button" aria-label="Show the source for: ${esc(a)}"><span class="dot2"></span><span class="tx">${esc(a)}${b?`<small>${esc(b)}</small>`:''}</span>
         <span class="vb"><button class="ok" data-v="ok" aria-pressed="${rvw(t)[i]==='ok'}" aria-label="Looks right"><svg viewBox="0 0 14 14"><path d="M3 7.4l2.6 2.6L11 4.6"/></svg></button><button class="no" data-v="no" aria-pressed="${rvw(t)[i]==='no'}" aria-label="Not right"><svg viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6"/></svg></button></span></div>`).join('')}</div></div>
-    <div><div class="sec-h"><h3>Source</h3><span>What Chrometooth read</span></div><div class="evbox${sel!==''&&sel!=null?' sel':''}">${markText(t.evd.text,t.evd.ranges)}</div></div>
-    <div><div class="sec-h"><h3>Your rules</h3><span>${rc.filter(r=>r.st==='pass').length} of ${rc.length} pass</span></div><ul class="rules">${rc.map(r=>`<li><span class="ri ${r.st}">${ICO[r.st]}</span><span><b>${r.name}</b><small>${r.note}</small></span></li>`).join('')}</ul></div>`;
+    <div><div class="sec-h"><h3>Source</h3>${t.query?'<button class="linkbtn" data-goact>Show in Activity</button>':'<span>What Chrometooth read</span>'}</div><div class="evbox${sel!==''&&sel!=null?' sel':''}">${evLines(t)}</div></div>
+    ${t.gen?'':`<div><div class="sec-h"><h3>Your rules</h3><span>${rc.filter(r=>r.st==='pass').length} of ${rc.length} pass</span></div><ul class="rules">${rc.map(r=>`<li><span class="ri ${r.st}">${ICO[r.st]}</span><span><b>${r.name}</b><small>${r.note}</small></span></li>`).join('')}</ul></div>`}`;
   if(sel!==''&&sel!=null)body.querySelectorAll(`mark.ev[data-r="${sel}"]`).forEach(m=>m.classList.add('on'));
   body.scrollTop=keep;
+  if(t.outcome){$('#dFoot').innerHTML=`<p class="gate ready">Resolved: ${esc(t.outcome)} at ${t.resolvedAt}.</p><button class="btn btn-line" data-d="later">Close</button>`;return;}
   const no=allNo(t),gate=st==='blocked'?`<p class="gate blocked">${rc.find(r=>r.st==='block').note}</p>`:st==='review'?`<p class="gate">Check ${t.why.length-n} more reason${t.why.length-n===1?'':'s'} to unlock the fix.</p>`:no?`<p class="gate">You marked every reason as not right. Mark it as a false positive.</p>`:`<p class="gate ready">Reviewed. Ready when you are.</p>`;
   $('#dFoot').innerHTML=gate+(no?`<button class="btn btn-line" data-d="later">Decide later</button><button class="btn btn-ink" data-d="fp">Mark false positive</button>`:`<button class="btn btn-line" data-d="later">Decide later</button><button class="btn btn-ink" data-d="do"${st==='ready'?'':' disabled'}>${t.verb}</button>`);
 }
 $('#dBody').addEventListener('click',e=>{const t=drawerT;if(!t)return;
+  if(e.target.closest('[data-goact]')){AV.go(t.query);closeDrawer();return;}
+  const lnk=e.target.closest('.ln.has-row');if(lnk&&!e.target.closest('mark.ev,.rsn')){AV.go(t.query,t.rows[lnk.dataset.ln]);closeDrawer();return;}
+  if(t.conn)return;
   if(e.target.closest('[data-all]')){t.why.forEach((_,i)=>rvw(t)[i]='ok');audit('you',`Confirmed all ${t.why.length} reasons on ${t.name}`);renderDrawer();renderQueue();if(canAct(t))audit('ai',`${t.name} is reviewed and ready to fix`);const b=$('#dFoot .btn-ink:not([disabled])');b&&b.focus();return;}
   const v=e.target.closest('.vb button');
   if(v){const i=+v.closest('.rsn').dataset.r,cur=rvw(t)[i];rvw(t)[i]=cur===v.dataset.v?undefined:v.dataset.v;if(!rvw(t)[i])delete rvw(t)[i];
@@ -1470,8 +1689,21 @@ $('#dBody').addEventListener('click',e=>{const t=drawerT;if(!t)return;
       else{const mk=box.querySelector(`mark.ev[data-r="${i}"]`);if(mk)mk.scrollIntoView({block:'nearest',behavior:RM?'auto':'smooth'});}}}});
 $('#dBody').addEventListener('keydown',e=>{const r=e.target.closest('.rsn');if(r&&e.target===r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();r.click();}});
 $('#dFoot').onclick=e=>{const b=e.target.closest('[data-d]');if(!b||b.disabled)return;const t=drawerT;closeDrawer();
+  if(t&&(t.gen||t.conn)){const d=t.dom||t.row.dom;if(b.dataset.d==='do')setTimeout(()=>AV.blockDomains([d]),250);else if(b.dataset.d==='fp')setTimeout(()=>AV.trustDomains([d]),250);return;}
   if(b.dataset.d==='do')setTimeout(()=>resolve(t),250);
   else if(b.dataset.d==='fp')setTimeout(()=>resolve(t,'Marked as a false positive'),250);};
+// Source lines, one per row, so a line can point back to its row in Activity.
+function evLines(t){const hit=$('#drawer').dataset.line;
+  return markText(t.evd.text,t.evd.ranges).split('\n').map((h,i)=>{const row=t.rows&&t.rows[i];return`<span class="ln${row?' has-row':''}${hit===String(i)?' hit':''}" data-ln="${i}"${row?' title="Show this line in Activity"':''}>${h||' '}</span>`;}).join('');}
+function renderConn(t){const r=t.row,d=DEV[r.dev],a=AV.hourly&&AV.hourly[r.dom],blk=r.v==='blocked';
+  $('#dSev').innerHTML=AV.vpill(r);$('#dTitle').textContent=r.dom;
+  let sp='';if(a){const m=Math.max(...a)||1,P=a.map((v,i)=>[(i*240/23).toFixed(1),(52-v/m*46).toFixed(1)]);sp=`<svg class="spk-lg" viewBox="0 0 240 56" preserveAspectRatio="none" role="img" aria-label="Traffic to ${esc(r.dom)} by hour, peaking at ${fmtB(m)} in one hour"><path class="ar" d="M0,56 L${P.map(p=>p.join(',')).join(' L')} L240,56Z"/><path d="M${P.map(p=>p.join(',')).join(' L')}" vector-effect="non-scaling-stroke"/></svg>`;}
+  $('#dBody').innerHTML=`<p class="sum">${d.name} ${r.dir==='in'?'received a connection from':'connected to'} ${esc(r.dom)} at ${hms(r.ts)}.</p>
+    <dl><dt>Time</dt><dd>${hms(r.ts)}</dd><dt>Device</dt><dd>${d.name} (${d.ip})</dd><dt>Direction</dt><dd>${r.dir==='in'?'Inbound':'Outbound'}</dd><dt>Country</dt><dd>${r.cc}</dd><dt>Protocol</dt><dd>${r.proto}</dd><dt>Sent</dt><dd>${fmtB(r.sent)} <span class="chkinfo">${exactB(r.sent)}</span></dd><dt>Received</dt><dd>${fmtB(r.recv)} <span class="chkinfo">${exactB(r.recv)}</span></dd></dl>
+    ${sp?`<div><div class="sec-h"><h3>Traffic to this destination</h3><span>Last 24 hours, every device</span></div>${sp}</div>`:''}
+    <div><div class="sec-h"><h3>Log line</h3><span>What Chrometooth recorded</span></div><div class="evbox">${esc(`${hms(r.ts)}  ${r.dir==='in'?'in ':'out'}  ${r.proto.padEnd(5)}  ${r.dom}  sent ${r.sent}  recv ${r.recv}  ${r.v}`)}</div></div>`;
+  $('#dFoot').innerHTML=blk?`<p class="gate ready">Blocked automatically. ${esc(r.dom)} is on Chrometooth’s blocklist.</p><button class="btn btn-line" data-d="later">Close</button>`
+    :`<p class="gate">Allowed. None of Chrometooth’s checks matched this connection.</p><button class="btn btn-line" data-d="later">Close</button><button class="btn btn-ink" data-d="do">Block destination</button>`;}
 function closeDrawer(){$('#drawer').classList.remove('on');$('#scrim').classList.remove('on');drawerT=null;lastFocus&&lastFocus.focus&&lastFocus.focus({preventScroll:true});}
 $('#dClose').onclick=closeDrawer;$('#scrim').onclick=closeDrawer;
 
@@ -1500,7 +1732,7 @@ $('#repCopy').onclick=async()=>{const v=$('#repTxt').value;try{await navigator.c
 
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){if($('#cfModal').classList.contains('on'))closeConfirm(false);else if($('#repModal').classList.contains('on'))closeRep();else if($('#drawer').classList.contains('on'))closeDrawer();else $('#allclear').classList.remove('on');}
-  if(e.key==='/'&&!$('#app').hidden&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)){e.preventDefault();$('#tin').focus();}
+  if(e.key==='/'&&!$('#app').hidden&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!document.querySelector('.modal.on,.drawer.on')){e.preventDefault();(view==='activity'?$('#avQ'):$('#tin')).focus();}
   if(e.key==='Tab'&&$('#cfModal').classList.contains('on')){const f=$$('#cfModal button'),a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}}
   if(e.key==='Tab'&&$('#repModal').classList.contains('on')){const f=$$('#repModal button, #repModal textarea'),a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}}
   if(e.key==='Tab'&&$('#allclear').classList.contains('on')){e.preventDefault();$('#acOk').focus();}
@@ -1641,9 +1873,431 @@ function confirmAct({title,html,yes},onYes){cfFrom=document.activeElement;cfDone
 function closeConfirm(ok){$('#cfModal').classList.remove('on');const f=cfDone;cfDone=null;cfFrom&&cfFrom.focus&&cfFrom.focus({preventScroll:true});if(ok&&f)f();}
 $('#cfModal').addEventListener('click',e=>{const b=e.target.closest('[data-cf]');if(b)return closeConfirm(b.dataset.cf==='yes');if(e.target.id==='cfModal')closeConfirm(false);});
 
+/* ===== activity: demo data (seeded, so every load gets the same rows) ===== */
+// The demo's clock reads 14:32. The log covers 15:00 yesterday to now: 24 clock hours, the last one partial.
+const NOW_S=14*3600+32*60, SPAN_S=23*3600+32*60;
+function mulberry32(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const clockOf=ts=>((NOW_S+ts)%86400+86400)%86400;
+const hms=ts=>{const c=clockOf(ts);return[c/3600|0,(c/60|0)%60,c%60].map(n=>String(n).padStart(2,'0')).join(':');};
+const hourOf=ts=>clockOf(ts)/3600|0;
+const whenOf=ts=>(clockOf(ts)>NOW_S?'Yesterday at ':'Today at ')+hms(ts).slice(0,5);
+const HOURS=Array.from({length:24},(_,k)=>(15+k)%24); // bar order: 15:00 yesterday … 14:00 today
+const hh=h=>String(h).padStart(2,'0')+':00';
+const fmtB=b=>b<1024?b+' B':b<1048576?(b/1024).toFixed(b<10240?1:0)+' KB':b<1073741824?(b/1048576).toFixed(1)+' MB':(b/1073741824).toFixed(2)+' GB';
+const exactB=b=>b.toLocaleString('en-US')+' bytes';
+// Destinations by device: domain, country, protocol, direction, rows a day, bytes sent [min,max], bytes received [min,max],
+// verdict, severity, pattern ('day': people use it, quiet at night; 'clock': runs around the clock) and the list it's on.
+const DESTS=[
+ [0,'time.cloudflare.com','US','NTP','out',24,[48,48],[48,48],'allowed','','clock'],
+ [0,'fw.routerco-updates.net','US','HTTPS','out',6,[900,2400],[2e4,9e4],'allowed','','clock'],
+ [0,'198.51.100.* scan','RU','TCP','in',70,[0,0],[60,180],'blocked','low','clock','blocklist'],
+ [0,'203.0.113.* scan','CN','TCP','in',40,[0,0],[60,180],'blocked','low','clock','blocklist'],
+ [1,'windowsupdate.com','US','HTTPS','out',28,[2e3,8e3],[1e5,4e7],'allowed','','day'],
+ [1,'outlook.office365.com','IE','HTTPS','out',110,[3e3,6e4],[5e3,4e5],'allowed','','day'],
+ [1,'github.com','US','HTTPS','out',60,[2e3,4e4],[1e4,9e5],'allowed','','day'],
+ [1,'steamcontent.com','US','HTTPS','out',16,[2e3,9e3],[5e6,9e8],'allowed','','day'],
+ [2,'zoom.us','US','UDP','out',40,[2e6,4e7],[3e6,6e7],'allowed','','day'],
+ [2,'slack.com','US','HTTPS','out',90,[1e3,2e4],[2e3,8e4],'allowed','','day'],
+ [2,'drive.google.com','US','HTTPS','out',30,[5e3,6e6],[5e3,2e6],'allowed','','day'],
+ [3,'backup.b2-storage.net','US','HTTPS','out',48,[1e6,2.6e8],[2e3,9e3],'allowed','','clock'],
+ [3,'pool.ntp.org','NL','NTP','out',24,[48,48],[48,48],'allowed','','clock'],
+ [4,'archive.ubuntu.com','GB','HTTPS','out',12,[900,3e3],[4e4,8e6],'allowed','','clock'],
+ [5,'telemetry.printmaker-cloud.com','US','HTTPS','out',96,[600,2400],[300,900],'flagged','low','clock','privacy'],
+ [6,'avs.voice-cloud.net','US','HTTPS','out',14,[4e4,3e5],[8e3,6e4],'flagged','high','day','privacy'],
+ [6,'device-metrics.voice-cloud.net','US','HTTPS','out',72,[800,4e3],[300,900],'allowed','','clock'],
+ [7,'api.spotify.com','SE','HTTPS','out',70,[1e3,6e3],[5e4,6e6],'allowed','','day'],
+ [7,'instagram.com','US','QUIC','out',110,[2e3,4e4],[1e5,9e6],'allowed','','day'],
+ [7,'sms-verify-promo.click','VN','HTTPS','out',3,[600,900],[0,0],'blocked','high','day','blocklist'],
+ [8,'clips.doorcam-cloud.com','US','HTTPS','out',63,[1.5e6,9e6],[600,2e3],'flagged','medium','clock','privacy'],
+ [9,'home.thermo-cloud.io','US','MQTT','out',96,[200,600],[200,600],'allowed','','clock'],
+ [9,'grid.utility-partner.com','US','HTTPS','out',24,[2e3,6e3],[400,900],'flagged','medium','clock','privacy'],
+ [10,'youtube.com','US','QUIC','out',60,[2e3,2e4],[1e6,8e7],'allowed','','day'],
+ [10,'docs.google.com','US','HTTPS','out',70,[2e3,6e4],[5e3,5e5],'allowed','','day'],
+ [10,'cdn.adtrack-metrics.com','CN','HTTPS','out',44,[400,1200],[0,0],'blocked','low','day','blocklist'],
+ [11,'acr.tvmaker-cloud.com','KR','HTTPS','out',230,[4e3,2.4e4],[300,1200],'flagged','high','clock','privacy'],
+ [11,'ads.tvmaker-cloud.com','KR','HTTPS','out',60,[500,2e3],[0,0],'blocked','low','clock','blocklist'],
+ [11,'nflxvideo.net','US','HTTPS','out',36,[2e3,9e3],[5e7,9e8],'allowed','','day'],
+].map(([dev,dom,cc,proto,dir,n,s,r,v,sev,pat,list])=>({dev,dom,cc,proto,dir,n,s,r,v,sev,pat,list:list||''}));
+const DAYW=h=>h<1?.5:h<6?.08:h<8?.6:h<23?1:.7; // people sleep, and so do most of their devices
+
+function buildRows(){
+  const rnd=mulberry32(0xC0FFEE),rows=[],span=(a,b)=>Math.round(a+(b-a)*Math.pow(rnd(),2.2));
+  const add=o=>(rows.push(o),o);
+  for(const d of DESTS){
+    for(let k=0;k<d.n;){const ts=-Math.floor(rnd()*SPAN_S);if(d.pat==='day'&&rnd()>DAYW(hourOf(ts)))continue;k++;
+      const dom=d.dom.endsWith(' scan')?d.dom.replace('* scan',String(2+Math.floor(rnd()*250))):d.dom;
+      if(d.dir==='out'&&!/^\d/.test(dom)&&rnd()<.24)add({ts:ts-1,dev:d.dev,dir:'out',dom,cc:d.cc,proto:'DNS',sent:60+Math.floor(rnd()*30),recv:d.v==='blocked'?0:90+Math.floor(rnd()*200),v:d.v,sev:d.sev,list:d.list,threat:0});
+      add({ts,dev:d.dev,dir:d.dir,dom,cc:d.cc,proto:d.proto,sent:span(d.s[0],d.s[1]),recv:d.v==='blocked'?0:span(d.r[0],d.r[1]),v:d.v,sev:d.sev,list:d.list,threat:0});}
+  }
+  // The three threats from the overview, at the times their log lines show. Each line keeps a pointer to its row.
+  const at=(h,m,s)=>h*3600+m*60+s-NOW_S;
+  const T=(id,line,o)=>{const r=add({dir:'out',proto:'HTTPS',list:'',...o,v:'flagged',threat:id});if(line!=null)(THREATS0[id-1].rows=THREATS0[id-1].rows||{})[line]=r;return r;};
+  T(1,0,{ts:at(14,31,48),dev:1,dom:'files-invoice-share.top',cc:'RU',sent:1840,recv:421888,sev:'critical'});
+  T(1,3,{ts:at(14,31,55),dev:1,dom:'198.51.100.47',cc:'NL',sent:3174,recv:1236,sev:'critical'});
+  const t2=at(14,20,3);
+  for(let k=0;k<214;k++)T(2,k<3?k:k===213?3:null,{ts:k<3?[t2,t2+1,t2+1][k]:t2+Math.round(k/213*364),dev:4,dir:'in',dom:'203.0.113.89',cc:'CN',proto:'SSH',sent:0,recv:380+Math.floor(rnd()*240),sev:'high'});
+  T(3,0,{ts:at(14,29,12),dev:2,dom:'paypa1-billing.co',cc:'PA',sent:2210,recv:18440,sev:'medium'});
+  T(3,1,{ts:at(14,29,40),dev:2,dom:'dl.paypa1-billing.co',cc:'PA',sent:1906,recv:397312,sev:'medium'});
+  rows.sort((a,b)=>b.ts-a.ts||a.dev-b.dev);rows.forEach((r,i)=>r.id=i);
+  return rows;
+}
+THREATS0.forEach(t=>t.query='threat:'+t.id);
+
+/* ===== activity: query language =====
+   device:tv verdict:blocked country:CN   key:value terms, AND across keys, OR within a key
+   -verdict:allowed                       a leading minus excludes
+   sent:>1mb  recv:<10kb                  sizes compare
+   "free text"                            anything else matches device, destination, country or protocol */
+const QKEYS={device:'Device',verdict:'Verdict',domain:'Destination',country:'Country',proto:'Protocol',dir:'Direction',sev:'Severity',hour:'Hour',last:'Time range',sent:'Data sent',recv:'Data received',threat:'Threat'};
+const LAST={'30m':1800,'1h':3600,'6h':21600,'24h':86400};
+const UNIT={b:1,kb:1024,mb:1048576,gb:1073741824};
+function parseQuery(q){
+  const terms=[],text=[],re=/(-?)([a-z]+):("[^"]*"?|\S*)|("[^"]*"?|\S+)/gi;let m;
+  while((m=re.exec(q))){
+    if(m[2]&&QKEYS[m[2].toLowerCase()]&&m[3]!==''){terms.push({key:m[2].toLowerCase(),val:m[3].replace(/"/g,''),neg:!!m[1]});}
+    else{const t=(m[4]||m[0]).replace(/"/g,'').trim().toLowerCase();if(t&&t!=='-')text.push(t);}
+  }
+  return{terms,text};
+}
+const quote=v=>/\s/.test(v)?`"${v}"`:v;
+const serialize=({terms,text})=>terms.map(t=>(t.neg?'-':'')+t.key+':'+quote(t.val)).concat(text.map(quote)).join(' ');
+function sizeTest(v){const m=/^([<>]=?)?(\d+(?:\.\d+)?)(b|kb|mb|gb)?$/.exec(v);if(!m)return()=>true;const n=+m[2]*(UNIT[m[3]||'b']),op=m[1]||'>=';
+  return op==='>'?x=>x>n:op==='<'?x=>x<n:op==='<='?x=>x<=n:x=>x>=n;}
+function termTest(t){const v=t.val.toLowerCase();switch(t.key){
+  case'device':return r=>{const d=DEV[r.dev];return d.name.toLowerCase().includes(v)||d.kind.toLowerCase().includes(v);};
+  case'verdict':return r=>r.v.startsWith(v);
+  case'domain':return r=>r.dom.includes(v);
+  case'country':return r=>r.cc.toLowerCase()===v;
+  case'proto':return r=>r.proto.toLowerCase()===v;
+  case'dir':return r=>r.dir===(v.startsWith('in')?'in':'out');
+  case'sev':return r=>v==='none'?!r.sev:r.sev===v;
+  case'hour':return r=>hourOf(r.ts)===parseInt(v,10);
+  case'last':{const s=LAST[v]||(/^\d+h$/.test(v)?parseInt(v,10)*3600:/^\d+m$/.test(v)?parseInt(v,10)*60:86400);return r=>r.ts>=-s;}
+  case'sent':{const f=sizeTest(v);return r=>f(r.sent);}
+  case'recv':{const f=sizeTest(v);return r=>f(r.recv);}
+  case'threat':return r=>r.threat===+v;}
+  return()=>true;}
+// One predicate for the whole query: every key must pass (any of its values), no excluded value may match,
+// and every free-text word must appear somewhere in the row.
+function compile({terms,text}){
+  const by={};terms.forEach(t=>{const g=by[t.key+(t.neg?'-':'+')]||(by[t.key+(t.neg?'-':'+')]=[]);g.push(termTest(t));});
+  const pos=Object.entries(by).filter(([k])=>k.endsWith('+')).map(([,f])=>f),neg=Object.entries(by).filter(([k])=>k.endsWith('-')).flatMap(([,f])=>f);
+  const words=text.map(w=>r=>(DEV[r.dev].name+' '+r.dom+' '+r.cc+' '+r.proto).toLowerCase().includes(w));
+  return r=>pos.every(fs=>fs.some(f=>f(r)))&&!neg.some(f=>f(r))&&words.every(f=>f(r));
+}
+
+/* ===== activity: the view ===== */
+const AV=(()=>{
+  const VORD={allowed:0,flagged:2,blocked:1},SORD={'':0,low:1,medium:2,high:3,critical:4};
+  const VCOL={allowed:['var(--low)','var(--low)','var(--low-f)'],flagged:['var(--high)','var(--high-t)','var(--high-f)'],blocked:['var(--ok)','var(--ok-t)','var(--ok-f)']};
+  const ARROW={out:'<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 8.5l5-5M4.5 3.5h4v4"/></svg>',in:'<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M8.5 3.5l-5 5M7.5 8.5h-4v-4"/></svg>'};
+  const LOCK='<svg class="mk" viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1"/><path d="M4 5.5V4a2 2 0 014 0v1.5"/></svg>';
+  const TRUST='<svg class="mk" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5l3.8 1.4v2.8c0 2.3-1.6 4.1-3.8 4.8C3.8 9.8 2.2 8 2.2 5.7V2.9z"/><path d="M4.4 6l1.2 1.2L7.8 5"/></svg>';
+  const vpill=r=>{const c=VCOL[r.v];return`<span class="sev" style="--c:${c[0]};--t:${c[1]};--f:${c[2]}">${cap(r.v)}</span>`;};
+  const sevm=s=>s?`<span class="svm" style="--c:${SEV[s][0]}"><i></i>${cap(s)}</span>`:'<span class="svm none" aria-label="None">–</span>';
+  const bytes=b=>`<span title="${exactB(b)}">${fmtB(b)}</span>`;
+  const blockedD=new Map(),trustedD=new Map();
+  const mark=r=>blockedD.has(r.dom)?`<span title="Blocked at the router at ${blockedD.get(r.dom)}">${LOCK}</span>`:trustedD.has(r.dom)?`<span title="Marked as trusted at ${trustedD.get(r.dom)}">${TRUST}</span>`:'';
+  let spark={};
+  const COLS=[
+    {k:'device',label:'Device',w:150,sort:r=>DEV[r.dev].name,cell:r=>DEV[r.dev].name},
+    {k:'dir',label:'Direction',w:116,sort:r=>r.dir,cell:r=>`<span class="dir">${ARROW[r.dir]}${r.dir==='in'?'Inbound':'Outbound'}</span>`},
+    {k:'dom',label:'Destination',w:240,flex:1,sort:r=>r.dom,cell:r=>`<span class="dom">${esc(r.dom)}</span>${mark(r)}`},
+    {k:'cc',label:'Country',w:80,sort:r=>r.cc,cell:r=>`<span class="mono">${r.cc}</span>`},
+    {k:'proto',label:'Protocol',w:88,sort:r=>r.proto,cell:r=>`<span class="mono">${r.proto}</span>`},
+    {k:'sent',label:'Sent',w:88,num:1,sort:r=>r.sent,cell:r=>bytes(r.sent)},
+    {k:'recv',label:'Received',w:96,num:1,sort:r=>r.recv,cell:r=>bytes(r.recv)},
+    {k:'spark',label:'Last 24h',w:92,nosort:1,cell:r=>spark[r.dom]||''},
+    {k:'v',label:'Verdict',w:104,sort:r=>VORD[r.v],cell:vpill},
+    {k:'sev',label:'Severity',w:104,sort:r=>SORD[r.sev],cell:r=>sevm(r.sev)},
+  ];
+  const TIMECOL={k:'time',label:'Time',sort:r=>r.ts};
+  const VDEF=[{n:'Blocked only',q:'verdict:blocked'},{n:'Smart TV',q:'device:Living-Room-TV'},{n:'Last hour',q:'last:1h'}];
+  let rows=null,sortedAll=[],list=[],q={terms:[],text:[]},sort={k:'time',dir:-1},active=0,anchor=null,rs=-1,re=-1,barFocus=23,built=false,pending=null;
+  let density=store.get('ct-density')==='compact'?'compact':'comfortable';
+  let hidden=new Set((()=>{try{return JSON.parse(store.get('ct-cols')||'[]');}catch(e){return[];}})());
+  let views=(()=>{try{return JSON.parse(store.get('ct-views')||'null')||VDEF.slice();}catch(e){return VDEF.slice();}})();
+  const sel=new Set(),phoneMQ=matchMedia('(max-width:760px)');
+  const el={};
+  const phone=()=>phoneMQ.matches;
+  const rowH=()=>phone()?86:density==='compact'?30:40;
+  const cols=()=>COLS.filter(c=>!hidden.has(c.k));
+  const headH=()=>phone()?0:el.head.offsetHeight;
+  const N=n=>n.toLocaleString('en-US');
+
+  /* data */
+  function build(){
+    rows=buildRows();
+    const by={};rows.forEach(r=>{const a=by[r.dom]||(by[r.dom]=new Array(24).fill(0));a[HOURS.indexOf(hourOf(r.ts))]+=r.sent+r.recv;});
+    for(const d in by){const a=by[d],m=Math.max(...a)||1;spark[d]=`<svg class="spk" viewBox="0 0 64 16" aria-hidden="true"><path d="${a.map((v,i)=>(i?'L':'M')+(i*64/23).toFixed(1)+','+(15-v/m*13).toFixed(1)).join('')}"/></svg>`;by[d]=a;}
+    AV.hourly=by;
+    sortRows();
+  }
+  function sortRows(){const c=sort.k==='time'?TIMECOL:COLS.find(x=>x.k===sort.k),f=c.sort,d=sort.dir;
+    sortedAll=rows.slice().sort((a,b)=>{const x=f(a),y=f(b);return(x<y?-1:x>y?1:0)*d||b.ts-a.ts;});}
+
+  /* query <-> chips: the parsed query is the one source of truth. Typing parses the text into it;
+     chips edit it and write the text back. */
+  function setTerms(fn){fn(q.terms);el.q.value=serialize(q);apply();}
+  const has=(key,val)=>q.terms.some(t=>t.key===key&&!t.neg&&t.val.toLowerCase()===val.toLowerCase());
+  function toggleTerm(key,val){setTerms(T=>{const i=T.findIndex(t=>t.key===key&&!t.neg&&t.val.toLowerCase()===val.toLowerCase());i>=0?T.splice(i,1):T.push({key,val,neg:false});});}
+  function setTime(v){setTerms(T=>{for(let i=T.length-1;i>=0;i--)if(T[i].key==='last'||T[i].key==='hour')T.splice(i,1);if(v)T.push(v);});}
+  function renderChips(){
+    const lastT=q.terms.find(t=>t.key==='last'&&!t.neg),hourT=q.terms.find(t=>t.key==='hour'&&!t.neg);
+    const devs=q.terms.filter(t=>t.key==='device'&&!t.neg).map(t=>t.val);
+    const shown=new Set(['verdict','last','hour','device']);
+    const others=q.terms.map((t,i)=>[t,i]).filter(([t])=>!shown.has(t.key)||t.neg);
+    const vchip=v=>`<button class="fchip" data-verdict="${v}" aria-pressed="${has('verdict',v)}" style="--c:${VCOL[v][0]}"><i></i>${cap(v)}</button>`;
+    const tchip=(v,l)=>`<button class="fchip" data-last="${v}" aria-pressed="${!hourT&&(lastT?lastT.val===v:v==='24h')}">${l}</button>`;
+    el.chips.innerHTML=`<div class="chipset" role="group" aria-label="Verdict">${['allowed','flagged','blocked'].map(vchip).join('')}</div>
+      <div class="pop-wrap"><button class="fchip" id="avDevB" aria-haspopup="true" aria-expanded="false" aria-controls="avDevP" aria-pressed="${devs.length>0}">Device: ${devs.length?esc(devs.length>1?devs.length+' selected':devs[0]):'Any'}<svg class="cv" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3"/></svg></button>
+        <div class="pop" id="avDevP" hidden><p class="pop-h">Show devices</p>${DEV.map(d=>`<label class="ck"><input type="checkbox" data-dev="${d.name}" ${has('device',d.name)?'checked':''}>${d.name}<small>${d.kind}</small></label>`).join('')}</div></div>
+      <div class="chipset" role="group" aria-label="Time range">${tchip('24h','24 hours')}${tchip('6h','6 hours')}${tchip('1h','1 hour')}${hourT?`<button class="fchip" aria-pressed="true" data-clearhour aria-label="Hour ${hh(+hourT.val)} to ${hh((+hourT.val+1)%24)}, remove">${hh(+hourT.val)}–${hh((+hourT.val+1)%24)}<svg class="x" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 3.5l5 5M8.5 3.5l-5 5"/></svg></button>`:''}</div>
+      ${others.map(([t,i])=>`<button class="fchip tok" data-rm="${i}" aria-label="Remove ${esc((t.neg?'not ':'')+t.key+' '+t.val)}">${esc((t.neg?'-':'')+t.key+':'+t.val)}<svg class="x" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 3.5l5 5M8.5 3.5l-5 5"/></svg></button>`).join('')}`;
+  }
+
+  /* suggestions as you type */
+  let sugs=[],sugI=-1;
+  function vals(k){const cnt=f=>{const m=new Map();rows.forEach(r=>{const v=f(r);m.set(v,(m.get(v)||0)+1);});return[...m].sort((a,b)=>b[1]-a[1]).map(([v,n])=>[v,N(n)+' rows']);};
+    switch(k){case'device':return DEV.map(d=>[d.name,d.kind]);case'verdict':return cnt(r=>r.v);case'country':return cnt(r=>r.cc);case'proto':return cnt(r=>r.proto);
+      case'dir':return[['in','Inbound'],['out','Outbound']];case'sev':return[['critical',''],['high',''],['medium',''],['low',''],['none','Not flagged']];
+      case'hour':return HOURS.slice().reverse().map(h=>[String(h),hh(h)+'–'+hh((h+1)%24)]);case'last':return[['30m','30 minutes'],['1h','1 hour'],['6h','6 hours'],['24h','24 hours']];
+      case'domain':return cnt(r=>r.dom).slice(0,40);case'sent':case'recv':return[['>1mb','More than 1 MB'],['>100kb','More than 100 KB'],['<1kb','Less than 1 KB']];
+      case'threat':return THREATS0.map(t=>[String(t.id),t.name]);}return[];}
+  function tokenAt(){const v=el.q.value,c=el.q.selectionStart??v.length,s=v.lastIndexOf(' ',c-1)+1;let e=v.indexOf(' ',c);if(e<0)e=v.length;return{s,e,t:v.slice(s,c)};}
+  function suggest(){
+    const {t}=tokenAt(),neg=t.startsWith('-')?'-':'',x=t.slice(neg.length),m=/^([a-z]+):(.*)$/i.exec(x);
+    if(!x)sugs=[];
+    else if(!m)sugs=Object.keys(QKEYS).filter(k=>k.startsWith(x.toLowerCase())).map(k=>({ins:neg+k+':',label:k+':',hint:QKEYS[k],more:true}));
+    else{const k=m[1].toLowerCase(),p=m[2].toLowerCase();sugs=QKEYS[k]?vals(k).filter(([v])=>{v=v.toLowerCase();return v.startsWith(p)||(p.length>1&&v.includes(p));}).slice(0,8).map(([v,h])=>({ins:neg+k+':'+quote(v)+' ',label:neg+k+':'+v,hint:h})):[];
+      if(sugs.length===1&&sugs[0].label.toLowerCase()===(neg+k+':'+p))sugs=[];}
+    sugI=sugs.length?0:-1;renderSug();
+  }
+  function renderSug(){const open=sugs.length>0;el.sug.hidden=!open;el.q.setAttribute('aria-expanded',open);
+    if(!open){el.q.removeAttribute('aria-activedescendant');return;}
+    el.sug.innerHTML=sugs.map((s,i)=>`<li role="option" id="avSug${i}" aria-selected="${i===sugI}" data-i="${i}"><span>${esc(s.label)}</span><small>${esc(s.hint)}</small></li>`).join('');
+    el.q.setAttribute('aria-activedescendant','avSug'+sugI);}
+  function accept(s){const {s:a,e}=tokenAt(),v=el.q.value;let rest=v.slice(e);if(!s.more)rest=rest.replace(/^ /,'');
+    el.q.value=v.slice(0,a)+s.ins+rest;const c=a+s.ins.length;el.q.setSelectionRange(c,c);onText();if(s.more)suggest();else{sugs=[];renderSug();}}
+  let textT=0;
+  function onText(){q=parseQuery(el.q.value);renderChips();clearTimeout(textT);textT=setTimeout(apply,60);}
+
+  /* applying the filter */
+  let liveT=0;
+  function apply(){
+    const p=compile(q);list=sortedAll.filter(p);
+    active=Math.min(active,Math.max(0,list.length-1));
+    el.grid.setAttribute('aria-rowcount',list.length+1);
+    el.scroll.scrollTop=0;rs=re=-1;
+    renderSummary();renderRows();renderEmpty();renderBulk();
+    el.count.textContent=list.length===rows.length?`${N(rows.length)} rows`:`${N(list.length)} of ${N(rows.length)} rows`;
+    clearTimeout(liveT);liveT=setTimeout(()=>{el.live.textContent=`${N(list.length)} row${list.length===1?'':'s'} match`;},700);
+  }
+
+  /* summary strip */
+  function renderSummary(){
+    let sent=0,blocked=0;const by=new Map(),bars=HOURS.map(()=>[0,0,0]);
+    for(const r of list){sent+=r.sent;if(r.v==='blocked')blocked++;by.set(r.dom,(by.get(r.dom)||0)+1);bars[HOURS.indexOf(hourOf(r.ts))][r.v==='allowed'?0:r.v==='flagged'?1:2]++;}
+    let top=null,tn=0;by.forEach((n,d)=>{if(n>tn){tn=n;top=d;}});
+    el.kc.textContent=N(list.length);el.ks.textContent=fmtB(sent);el.ks.title=exactB(sent);el.kb.textContent=N(blocked);
+    el.kt.innerHTML=top?`<span class="dom">${esc(top)}</span><small>${N(tn)} connections</small>`:'<span class="dom">None</span><small>&nbsp;</small>';
+    const max=Math.max(1,...bars.map(b=>b[0]+b[1]+b[2])),hT=q.terms.find(t=>t.key==='hour'&&!t.neg),on=hT?+hT.val:-1;
+    el.bars.classList.toggle('has-on',on>=0);
+    [...el.bars.children].forEach((b,i)=>{const[a,f,k]=bars[i],tot=a+f+k,h=HOURS[i],st=b.firstChild;
+      st.style.height=(tot/max*100)+'%';st.children[0].style.flexGrow=a;st.children[1].style.flexGrow=f;st.children[2].style.flexGrow=k;
+      b.dataset.n=[a,f,k].join(',');b.setAttribute('aria-pressed',h===on);
+      b.setAttribute('aria-label',`${hh(h)} to ${hh((h+1)%24)}${i===23?' (now)':''}: ${N(tot)} connections, ${N(a)} allowed, ${N(f)} flagged, ${N(k)} blocked`);});
+  }
+  function barTip(b){const i=+b.dataset.i,h=HOURS[i],[a,f,k]=b.dataset.n.split(',').map(Number),r=b.getBoundingClientRect();
+    tip.innerHTML=`<b>${hh(h)}–${i===23?'now':hh((h+1)%24)}</b><div class="tr">${N(a+f+k)} connections</div><div class="tr"><i style="background:var(--av-allowed)"></i>${N(a)} allowed</div><div class="tr"><i style="background:var(--high)"></i>${N(f)} flagged</div><div class="tr"><i style="background:var(--ok)"></i>${N(k)} blocked</div>`;
+    tip.classList.add('on');const w=tip.offsetWidth,th=tip.offsetHeight;tip.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2))+'px';tip.style.top=Math.max(8,r.top-th-8)+'px';}
+  function pickHour(i){const h=HOURS[i],cur=q.terms.find(t=>t.key==='hour'&&!t.neg);setTime(cur&&+cur.val===h?null:{key:'hour',val:String(h),neg:false});}
+
+  /* table */
+  function gridCols(){const c=cols();el.grid.style.setProperty('--cols',`40px 92px ${c.map(x=>x.flex?`minmax(${x.w}px,1fr)`:x.w+'px').join(' ')}`);
+    el.grid.style.setProperty('--minw',(132+c.reduce((a,x)=>a+x.w,0))+'px');}
+  function renderHead(){gridCols();
+    const th=(c,cls)=>{const s=sort.k===c.k,lab=c.label;
+      return`<span class="c ${cls||''} c-${c.k}${c.num?' num':''}" role="columnheader"${s?` aria-sort="${sort.dir<0?'descending':'ascending'}"`:''}>${c.nosort?`<span class="hl">${lab}</span>`:`<button class="hl" data-sort="${c.k}">${lab}<svg class="ar${s?' on':''}${s&&sort.dir>0?' up':''}" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.5v7M3 6.5l3 3 3-3"/></svg></button>`}</span>`;};
+    el.head.innerHTML=`<span class="c c-sel" role="columnheader"><input type="checkbox" id="avAll" aria-label="Select all rows that match"></span>${th(TIMECOL,'c-time')}${cols().map(c=>th(c)).join('')}`;
+    syncAll();}
+  function rowHTML(r,i,H){const s=sel.has(r.id),cl=`av-r${s?' sel':''}${r.v==='flagged'?' fl':''}`,lab=`${hms(r.ts)} ${DEV[r.dev].name} ${r.dom}`;
+    const cb=`<span class="c c-sel" role="gridcell"><input type="checkbox" tabindex="-1" aria-label="Select ${esc(lab)}"${s?' checked':''}></span>`;
+    if(phone())return`<div class="${cl} card" role="row" aria-rowindex="${i+2}" aria-selected="${s}" data-i="${i}" tabindex="${i===active?0:-1}" style="top:${i*H}px">${cb}<span class="c card-b" role="gridcell"><span class="l1"><b>${DEV[r.dev].name}</b><time>${hms(r.ts)}</time></span><span class="l2"><span class="dom">${esc(r.dom)}</span>${mark(r)}</span><span class="l3">${vpill(r)}${r.sev?sevm(r.sev):''}<span class="num">${r.dir==='in'?'In':'Out'} · ${r.proto} · ${fmtB(r.sent)} sent</span></span></span></div>`;
+    return`<div class="${cl}" role="row" aria-rowindex="${i+2}" aria-selected="${s}" data-i="${i}" tabindex="${i===active?0:-1}" style="top:${i*H}px">${cb}<span class="c c-time" role="gridcell">${hms(r.ts)}</span>${cols().map(c=>`<span class="c c-${c.k}${c.num?' num':''}" role="gridcell">${c.cell(r)}</span>`).join('')}</div>`;}
+  // Windowing: the body is as tall as every row would be, but only the rows in view (plus a few either side) exist.
+  function renderRows(force){
+    const H=rowH(),st=el.scroll.scrollTop-headH(),vh=el.scroll.clientHeight;
+    const a=Math.max(0,Math.floor(st/H)-8),b=Math.min(list.length,Math.ceil((st+vh)/H)+8);
+    if(!force&&a===rs&&b===re)return;rs=a;re=b;
+    const hadFocus=el.body.contains(document.activeElement);
+    el.body.style.height=list.length*H+'px';
+    let h='';for(let i=a;i<b;i++)h+=rowHTML(list[i],i,H);el.body.innerHTML=h;
+    if(!el.body.querySelector('[tabindex="0"]')&&el.body.firstElementChild)el.body.firstElementChild.tabIndex=0;
+    if(hadFocus){const f=el.body.querySelector(`[data-i="${active}"]`);f&&f.focus({preventScroll:true});}
+    AV.domRows=Math.max(AV.domRows||0,b-a);
+  }
+  function setActive(i,focus){if(!list.length)return;active=Math.max(0,Math.min(list.length-1,i));const H=rowH(),top=active*H,vh=el.scroll.clientHeight-headH(),st=el.scroll.scrollTop;
+    if(top<st)el.scroll.scrollTop=top;else if(top+H>st+vh)el.scroll.scrollTop=top+H-vh;
+    renderRows(true);if(focus){const f=el.body.querySelector(`[data-i="${active}"]`);f&&f.focus({preventScroll:true});}}
+  function renderEmpty(){const none=!list.length;el.empty.hidden=!none;if(!none)return;
+    const timeT=q.terms.findIndex(t=>(t.key==='last'||t.key==='hour')&&!t.neg);
+    const opts=q.terms.map((t,i)=>[t,i]).filter(([,i])=>i!==timeT).slice(0,3);
+    el.empty.innerHTML=`<div class="empty"><b>No rows match these filters.</b>Widen the search by removing a filter.<div class="ex">${timeT>=0?'<button data-widen>Show all 24 hours</button>':''}${opts.map(([t,i])=>`<button data-rm="${i}">Remove ${esc((t.neg?'-':'')+t.key+':'+t.val)}</button>`).join('')}${q.text.length?'<button data-rmtext>Remove the search words</button>':''}</div><button class="btn btn-line btn-sm" data-clear>Clear all filters</button></div>`;}
+
+  /* selection and bulk actions */
+  function syncAll(){const all=document.getElementById('avAll');if(!all)return;const n=list.filter(r=>sel.has(r.id)).length;all.checked=n>0&&n===list.length;all.indeterminate=n>0&&n<list.length;}
+  function toggleSel(r,on){(on??!sel.has(r.id))?sel.add(r.id):sel.delete(r.id);}
+  function renderBulk(){const n=sel.size;el.bulk.hidden=!n;el.row2.hidden=!!n;syncAll();if(!n)return;
+    const doms=new Set([...sel].map(id=>rows[id].dom)).size;
+    el.seln.textContent=`${N(n)} selected`;el.bulkDoms.textContent=doms===1?'Block destination':`Block ${doms} destinations`;}
+  function afterSel(){renderBulk();renderRows(true);}
+  const selRows=()=>rows.filter(r=>sel.has(r.id));
+  function blockDomains(doms,done){const n=doms.length;
+    confirmAct({title:n===1?`Block ${doms[0]}?`:`Block ${n} destinations?`,
+      html:`<p>Chrometooth will block new connections to ${n===1?'this destination':'these destinations'} at the router. Any device that relies on ${n===1?'it':'them'} may stop working. Past rows stay in the log.</p><ul>${doms.slice(0,12).map(d=>`<li>${esc(d)}</li>`).join('')}${n>12?`<li>and ${n-12} more</li>`:''}</ul>`,
+      yes:n===1?'Block destination':`Block ${n} destinations`},()=>{const t=hhmm();doms.forEach(d=>{blockedD.set(d,t);trustedD.delete(d);});
+        audit('you',n===1?`Blocked ${doms[0]} at the router`:`Blocked ${n} destinations at the router`);toast(n===1?`Blocked ${doms[0]}`:`Blocked ${n} destinations`);done&&done();if(built)renderRows(true);});}
+  function trustDomains(doms){const t=hhmm();doms.forEach(d=>{trustedD.set(d,t);blockedD.delete(d);});const n=doms.length;
+    audit('you',n===1?`Marked ${doms[0]} as trusted`:`Marked ${n} destinations as trusted`);toast(n===1?`${doms[0]} is trusted`:`${n} destinations trusted`);renderRows(true);}
+  function exportCsv(){const L=selRows(),cq=v=>/[",\n]/.test(v)?`"${String(v).replace(/"/g,'""')}"`:v;
+    const txt=['time,device,direction,destination,country,protocol,bytes_sent,bytes_received,verdict,severity'].concat(L.map(r=>[hms(r.ts),DEV[r.dev].name,r.dir==='in'?'inbound':'outbound',r.dom,r.cc,r.proto,r.sent,r.recv,r.v,r.sev].map(cq).join(','))).join('\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv'}));a.download=`chrometooth-activity-${L.length}-rows.csv`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+    audit('you',`Exported ${L.length} activity row${L.length===1?'':'s'} as CSV`);toast(`Exported ${N(L.length)} row${L.length===1?'':'s'}`);}
+
+  /* rows -> drawer */
+  const finds={};
+  function findingFor(r){const key=r.dev+'|'+r.dom;if(finds[key])return finds[key];
+    const g=rows.filter(x=>x.dev===r.dev&&x.dom===r.dom&&x.proto!=='DNS').sort((a,b)=>a.ts-b.ts),n=g.length,sent=g.reduce((a,x)=>a+x.sent,0),recv=g.reduce((a,x)=>a+x.recv,0);
+    const night=g.filter(x=>{const h=hourOf(x.ts);return h>=1&&h<6;}),per=Math.max(1,Math.round(SPAN_S/60/n)),dev=DEV[r.dev].name;
+    const why=[[`${N(n)} connections in the last 24 hours`,`About one every ${per} minute${per===1?'':'s'}`],
+      [`${r.dom} is on Chrometooth’s ${r.list==='privacy'?'tracking list':'blocklist'}`,r.list==='privacy'?'A list of domains known to collect usage data':'A list of domains known for scams or abuse']];
+    const ratio=Math.round(sent/Math.max(recv,1)),useRatio=sent>2*recv,useNight=!useRatio&&night.length>2;
+    why.push(useRatio?[`Sent ${fmtB(sent)} and received ${fmtB(recv)}`,`${ratio}× more data out than in`]:useNight?[`${night.length} connections between 01:00 and 06:00`,'While the rest of the network is quiet']:[`Sent ${fmtB(sent)} in total`,'Across every connection today']);
+    const pick=[...new Set([r.proto==='DNS'?g[g.length-1]:r,g[0],useNight?night[0]:g.reduce((m,x)=>x.sent>m.sent?x:m,g[0])])].filter(Boolean).sort((a,b)=>a.ts-b.ts);
+    const line=x=>`${hms(x.ts)}  ${x.dir==='in'?'in ':'out'}  ${x.proto.padEnd(5)}  `;
+    const ev=pick.map((x,k)=>[[line(x)],[x.dom,k===0?1:null],[`  sent ${fmtB(x.sent)}  recv ${fmtB(x.recv)}`]]);
+    if(useNight){const k=pick.indexOf(night[0]);if(k>=0)ev[k][0]=[line(night[0]).slice(0,8),2],ev[k].splice(1,0,[line(night[0]).slice(8)]);}
+    ev.push([['24h       '],[`${N(n)} connections`,0],['  '],[`sent ${fmtB(sent)}`,useRatio?2:null],[`  recv ${fmtB(recv)}`]]);
+    const t={gen:true,id:'g'+key,name:`Traffic to ${r.dom}`,dev:r.dev,dom:r.dom,cc:r.cc,sev:r.sev||'low',verb:'Block destination',need:'Block the destination',vec:4,
+      sum:`${dev} connected to ${r.dom} ${N(n)} times in the last 24 hours. Three simple checks on this log flagged it. Look at each one before you decide.`,
+      seen:whenOf(g[0].ts),why,rows:{},query:`device:${DEV[r.dev].name} domain:${r.dom}`};
+    pick.forEach((x,k)=>t.rows[k]=x);
+    let text='',ranges=[];ev.forEach((ln,li)=>{ln.forEach(([s,rr])=>{if(rr!=null)ranges.push({s:text.length,e:text.length+s.length,r:rr});text+=s;});if(li<ev.length-1)text+='\n';});t.evd={text,ranges};
+    return finds[key]=t;}
+  function connOf(r){return{conn:true,row:r,name:r.dom,sev:r.sev,dev:r.dev};}
+  function lineOf(t,r){if(!t.rows)return null;const e=Object.entries(t.rows).find(([,x])=>x===r);return e?+e[0]:null;}
+  function openRow(r){if(!r)return;
+    if(r.threat){const t=THREATS0[r.threat-1];t.query=`threat:${t.id}`;return openDrawer(t,{line:lineOf(t,r)});}
+    if(r.v==='flagged'){const t=findingFor(r);return openDrawer(t,{line:lineOf(t,r)});}
+    openDrawer(connOf(r));}
+  // From the drawer back to the table: filter to the finding's rows and land on the one that was picked.
+  function go(query,row){pending={query,row};if(view==='activity')consume();else location.hash='app/activity';}
+  function consume(){if(!pending)return;const{query,row}=pending;pending=null;el.q.value=query;q=parseQuery(query);renderChips();apply();
+    if(row){const i=list.indexOf(row);if(i>=0)requestAnimationFrame(()=>{setActive(i,true);const f=el.body.querySelector(`[data-i="${i}"]`);if(f&&!RM){f.classList.add('flash');}});}
+    else requestAnimationFrame(()=>setActive(0,true));}
+
+  /* popovers */
+  function popToggle(btn,pop,open){open=open??pop.hidden;$$('.actv .pop').forEach(p=>{if(p!==pop&&!p.hidden){p.hidden=true;const b=document.querySelector(`[aria-controls="${p.id}"]`);b&&b.setAttribute('aria-expanded','false');}});
+    pop.hidden=!open;btn.setAttribute('aria-expanded',open);if(open){const f=pop.querySelector('input,button');f&&f.focus();}}
+  function renderViews(){const cur=serialize(q);
+    el.views.innerHTML=`<p class="pop-h">Saved views</p>${views.length?`<ul class="vw">${views.map((v,i)=>`<li><button class="vw-a" data-view="${i}"${v.q===cur?' aria-current="true"':''}><span>${esc(v.n)}</span><small>${esc(v.q)}</small></button><button class="icon-btn vw-x" data-delview="${i}" aria-label="Delete the view ${esc(v.n)}"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg></button></li>`).join('')}</ul>`:'<p class="pop-note">No saved views yet.</p>'}
+      <form class="vw-save" id="avSave"><label for="avVName">Save the current filters</label><div><input id="avVName" maxlength="40" placeholder="${cur?'Name this view':'Add a filter first'}" ${cur?'':'disabled'}><button class="btn btn-ink btn-sm" ${cur?'':'disabled'}>Save</button></div></form>`;}
+  const saveViews=()=>store.set('ct-views',JSON.stringify(views));
+  function renderColsMenu(){el.colsP.innerHTML=`<p class="pop-h">Columns</p>${COLS.map(c=>`<label class="ck"><input type="checkbox" data-col="${c.k}" ${hidden.has(c.k)?'':'checked'} ${c.k==='dom'?'disabled':''}>${c.label}</label>`).join('')}`;}
+
+  /* wiring */
+  function wire(){
+    const $id=id=>document.getElementById(id);
+    Object.assign(el,{q:$id('avQ'),sug:$id('avSug'),chips:$id('avChips'),count:$id('avCount'),live:$id('avLive'),scroll:$id('avScroll'),grid:$id('avGrid'),head:$id('avHead'),body:$id('avBody'),empty:$id('avEmpty'),
+      bars:$id('avBars'),kc:$id('avKc'),ks:$id('avKs'),kb:$id('avKb'),kt:$id('avKt'),row2:$id('avRow2'),bulk:$id('avBulk'),seln:$id('avSelN'),bulkDoms:$id('avBlock'),views:$id('avViews'),viewsB:$id('avViewsB'),colsP:$id('avCols'),colsB:$id('avColsB'),dens:$id('avDensity'),sortM:$id('avSortM')});
+    // hour bars, built once and updated in place so focus never jumps
+    el.bars.innerHTML=HOURS.map((h,i)=>`<button class="hb" data-i="${i}" tabindex="${i===barFocus?0:-1}"><span class="st"><i class="a"></i><i class="f"></i><i class="b"></i></span></button>`).join('');
+    $id('avAxis').innerHTML=[0,6,12,18,23].map(i=>`<span>${i===23?'Now':hh(HOURS[i])}</span>`).join('');
+    el.bars.addEventListener('pointerover',e=>{const b=e.target.closest('.hb');b&&barTip(b);});el.bars.addEventListener('pointerleave',hideTip);
+    el.bars.addEventListener('focusin',e=>{const b=e.target.closest('.hb');b&&barTip(b);});el.bars.addEventListener('focusout',hideTip);
+    el.bars.addEventListener('click',e=>{const b=e.target.closest('.hb');if(b)pickHour(+b.dataset.i);});
+    el.bars.addEventListener('keydown',e=>{const b=e.target.closest('.hb');if(!b)return;let i=+b.dataset.i;
+      if(e.key==='ArrowRight')i++;else if(e.key==='ArrowLeft')i--;else if(e.key==='Home')i=0;else if(e.key==='End')i=23;else return;e.preventDefault();
+      i=Math.max(0,Math.min(23,i));barFocus=i;[...el.bars.children].forEach((x,k)=>x.tabIndex=k===i?0:-1);el.bars.children[i].focus();});
+    // search box
+    el.q.addEventListener('input',()=>{onText();suggest();});
+    el.q.addEventListener('click',suggest);
+    el.q.addEventListener('blur',()=>setTimeout(()=>{if(document.activeElement!==el.q){sugs=[];renderSug();}},120));
+    el.q.addEventListener('keydown',e=>{const open=sugs.length>0;
+      if(e.key==='ArrowDown'&&open){e.preventDefault();sugI=(sugI+1)%sugs.length;renderSug();}
+      else if(e.key==='ArrowUp'&&open){e.preventDefault();sugI=(sugI-1+sugs.length)%sugs.length;renderSug();}
+      else if((e.key==='Enter'||e.key==='Tab')&&open&&sugI>=0){e.preventDefault();accept(sugs[sugI]);}
+      else if(e.key==='Enter'){e.preventDefault();clearTimeout(textT);apply();sugs=[];renderSug();}
+      else if(e.key==='Escape'){e.stopPropagation();if(open){sugs=[];renderSug();}else if(el.q.value){el.q.value='';onText();}else el.q.blur();}
+      else if(e.key==='ArrowDown'&&!open&&list.length){e.preventDefault();setActive(active,true);}});
+    el.sug.addEventListener('pointerdown',e=>{const li=e.target.closest('li');if(li){e.preventDefault();accept(sugs[+li.dataset.i]);}});
+    // chips
+    el.chips.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+      if(b.dataset.verdict)toggleTerm('verdict',b.dataset.verdict);
+      else if(b.dataset.last)setTime(b.dataset.last==='24h'?null:{key:'last',val:b.dataset.last,neg:false});
+      else if(b.hasAttribute('data-clearhour'))setTime(null);
+      else if(b.dataset.rm!=null)setTerms(T=>T.splice(+b.dataset.rm,1));
+      else if(b.id==='avDevB')return popToggle(b,$id('avDevP'));
+      const id=b.id||(b.dataset.verdict?`[data-verdict="${b.dataset.verdict}"]`:b.dataset.last?`[data-last="${b.dataset.last}"]`:null);
+      if(id){const n=id.startsWith('[')?el.chips.querySelector(id):$id(id);n&&n.focus();}});
+    el.chips.addEventListener('change',e=>{const c=e.target.closest('[data-dev]');if(!c)return;toggleTerm('device',c.dataset.dev);
+      const p=$id('avDevP');p.hidden=false;$id('avDevB').setAttribute('aria-expanded','true');p.querySelector(`[data-dev="${c.dataset.dev}"]`).focus();});
+    // table
+    el.scroll.addEventListener('scroll',()=>{if(!AV.raf)AV.raf=requestAnimationFrame(()=>{AV.raf=0;renderRows();});},{passive:true});
+    new ResizeObserver(()=>{if(view==='activity')renderRows(true);}).observe(el.scroll);
+    el.head.addEventListener('click',e=>{const b=e.target.closest('[data-sort]');if(b){const k=b.dataset.sort;sort=sort.k===k?{k,dir:-sort.dir}:{k,dir:k==='time'||COLS.find(c=>c.k===k).num?-1:1};sortRows();renderHead();apply();
+      const lab=(k==='time'?TIMECOL:COLS.find(c=>c.k===k)).label;el.live.textContent=`Sorted by ${lab}, ${sort.dir<0?'descending':'ascending'}`;el.head.querySelector(`[data-sort="${k}"]`).focus();return;}
+      if(e.target.id==='avAll'){const on=e.target.checked;list.forEach(r=>toggleSel(r,on));afterSel();}});
+    el.body.addEventListener('click',e=>{const row=e.target.closest('.av-r');if(!row)return;const i=+row.dataset.i,r=list[i];
+      if(e.target.closest('.c-sel')){if(e.target.tagName!=='INPUT')e.preventDefault();
+        if(e.shiftKey&&anchor!=null){const[a,b]=[Math.min(anchor,i),Math.max(anchor,i)],on=!sel.has(r.id);for(let k=a;k<=b;k++)toggleSel(list[k],on);}else toggleSel(r);
+        anchor=i;active=i;afterSel();return;}
+      active=i;setActive(i,true);openRow(r);});
+    el.body.addEventListener('keydown',e=>{const H=rowH(),per=Math.max(1,Math.floor((el.scroll.clientHeight-headH())/H)-1);let n=active;
+      switch(e.key){case'ArrowDown':n++;break;case'ArrowUp':n--;break;case'PageDown':n+=per;break;case'PageUp':n-=per;break;case'Home':n=0;break;case'End':n=list.length-1;break;
+        case'Enter':e.preventDefault();return openRow(list[active]);
+        case' ':e.preventDefault();toggleSel(list[active]);anchor=active;return afterSel();
+        case'Escape':if(sel.size){e.stopPropagation();sel.clear();afterSel();}return;
+        default:return;}
+      e.preventDefault();setActive(n,true);});
+    el.body.addEventListener('focusin',e=>{const row=e.target.closest('.av-r');if(row)active=+row.dataset.i;});
+    el.empty.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+      if(b.hasAttribute('data-widen'))setTime(null);else if(b.dataset.rm!=null)setTerms(T=>T.splice(+b.dataset.rm,1));
+      else if(b.hasAttribute('data-rmtext')){q.text=[];el.q.value=serialize(q);apply();}else if(b.hasAttribute('data-clear')){el.q.value='';onText();clearTimeout(textT);apply();}
+      renderChips();el.q.focus();});
+    // toolbar
+    el.dens.addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(!b||b.dataset.d===density)return;const first=Math.floor((el.scroll.scrollTop)/rowH());density=b.dataset.d;store.set('ct-density',density);
+      $$('#avDensity button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.d===density));el.grid.classList.toggle('compact',density==='compact');el.grid.style.setProperty('--rh',rowH()+'px');
+      el.scroll.scrollTop=first*rowH();renderRows(true);});
+    el.viewsB.addEventListener('click',()=>{renderViews();popToggle(el.viewsB,el.views);});
+    el.views.addEventListener('click',e=>{const a=e.target.closest('[data-view]'),d=e.target.closest('[data-delview]');
+      if(a){const v=views[+a.dataset.view];el.q.value=v.q;onText();clearTimeout(textT);apply();popToggle(el.viewsB,el.views,false);el.viewsB.focus();}
+      if(d){const v=views.splice(+d.dataset.delview,1)[0];saveViews();renderViews();toast(`Deleted the view “${v.n}”`);(el.views.querySelector('.vw-x')||el.views.querySelector('input'))?.focus();}});
+    el.views.addEventListener('submit',e=>{e.preventDefault();const inp=$id('avVName'),n=inp.value.trim(),cur=serialize(q);if(!n||!cur)return inp.focus();
+      views.push({n,q:cur});saveViews();renderViews();toast(`Saved the view “${n}”`);$id('avVName').focus();});
+    el.colsB.addEventListener('click',()=>{renderColsMenu();popToggle(el.colsB,el.colsP);});
+    el.colsP.addEventListener('change',e=>{const c=e.target.dataset.col;if(!c)return;e.target.checked?hidden.delete(c):hidden.add(c);store.set('ct-cols',JSON.stringify([...hidden]));renderHead();renderRows(true);});
+    el.sortM.addEventListener('change',()=>{const[k,d]=el.sortM.value.split(':');sort={k,dir:+d};sortRows();renderHead();apply();});
+    document.addEventListener('click',e=>{if(!e.target.closest('.actv .pop-wrap'))$$('.actv .pop').forEach(p=>{if(!p.hidden){p.hidden=true;const b=document.querySelector(`[aria-controls="${p.id}"]`);b&&b.setAttribute('aria-expanded','false');}});});
+    $id('actv').addEventListener('keydown',e=>{if(e.key!=='Escape')return;const p=e.target.closest('.pop');if(p){e.stopPropagation();p.hidden=true;const b=document.querySelector(`[aria-controls="${p.id}"]`);if(b){b.setAttribute('aria-expanded','false');b.focus();}}});
+    // bulk bar
+    el.bulk.addEventListener('click',e=>{const b=e.target.closest('[data-bulk]');if(!b)return;const doms=[...new Set(selRows().map(r=>r.dom))];
+      if(b.dataset.bulk==='block')blockDomains(doms,()=>{sel.clear();afterSel();});else if(b.dataset.bulk==='trust'){trustDomains(doms);sel.clear();afterSel();}
+      else if(b.dataset.bulk==='csv')exportCsv();else{sel.clear();afterSel();el.body.querySelector('[tabindex="0"]')?.focus();}});
+    phoneMQ.addEventListener('change',()=>{el.grid.classList.toggle('cards',phone());el.grid.style.setProperty('--rh',rowH()+'px');renderHead();rs=re=-1;renderRows(true);});
+  }
+  function show(){
+    if(!built){built=true;build();wire();el.grid.classList.toggle('compact',density==='compact');el.grid.classList.toggle('cards',phone());
+      $$('#avDensity button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.d===density));renderHead();renderChips();apply();}
+    el.grid.style.setProperty('--rh',rowH()+'px');
+    requestAnimationFrame(()=>{renderRows(true);consume();});
+  }
+  return{vpill,show,go,openRow,blockDomains,trustDomains,findingFor,get rows(){return rows;},get list(){return list;},domRows:0,raf:0,hourly:null};
+})();
+
 /* ===== views: Overview | Activity ===== */
 let view='overview';
-const AV={show(){}};
 function setView(v){view=v;$('.dash').hidden=v!=='overview';$('#actv').hidden=v!=='activity';
   $$('.vtabs a').forEach(a=>{if(a.dataset.view===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
   if(v==='activity')AV.show();}
