@@ -2090,7 +2090,7 @@ const AV=(()=>{
     active=Math.min(active,Math.max(0,list.length-1));
     el.grid.setAttribute('aria-rowcount',list.length+1);
     el.scroll.scrollTop=0;rs=re=-1;
-    renderSummary();renderRows();renderEmpty();renderBulk();
+    renderSummary();renderRows(true);renderEmpty();renderBulk();
     el.count.textContent=list.length===rows.length?`${N(rows.length)} rows`:`${N(list.length)} of ${N(rows.length)} rows`;
     clearTimeout(liveT);liveT=setTimeout(()=>{el.live.textContent=`${N(list.length)} row${list.length===1?'':'s'} match`;},700);
   }
@@ -2130,16 +2130,24 @@ const AV=(()=>{
     if(phone())return`<div class="${cl} av-card" role="row" aria-rowindex="${i+2}" aria-selected="${s}" data-i="${i}" tabindex="${i===active?0:-1}" style="top:${i*H}px">${cb}<span class="c card-b" role="gridcell"><span class="l1"><b>${DEV[r.dev].name}</b><time>${hms(r.ts)}</time></span><span class="l2"><span class="dom">${esc(r.dom)}</span>${mark(r)}</span><span class="l3">${vpill(r)}${r.sev?sevm(r.sev):''}<span class="num">${r.dir==='in'?'In':'Out'} · ${r.proto} · ${fmtB(r.sent)} sent</span></span></span></div>`;
     return`<div class="${cl}" role="row" aria-rowindex="${i+2}" aria-selected="${s}" data-i="${i}" tabindex="${i===active?0:-1}" style="top:${i*H}px">${cb}<span class="c c-time" role="gridcell">${hms(r.ts)}</span>${cols().map(c=>`<span class="c c-${c.k}${c.num?' num':''}" role="gridcell">${c.cell(r)}</span>`).join('')}</div>`;}
   // Windowing: the body is as tall as every row would be, but only the rows in view (plus a few either side) exist.
+  // Rows that stay in view are kept; only the rows scrolling in are built, so a scroll step costs a handful of rows.
+  const live=new Map();
   function renderRows(force){
     const H=rowH(),st=el.scroll.scrollTop-headH(),vh=el.scroll.clientHeight;
-    const a=Math.max(0,Math.floor(st/H)-8),b=Math.min(list.length,Math.ceil((st+vh)/H)+8);
-    if(!force&&a===rs&&b===re)return;rs=a;re=b;
+    const a=Math.max(0,Math.floor(st/H)-4),b=Math.min(list.length,Math.ceil((st+vh)/H)+4);
+    if(!force&&a===rs&&b===re)return;
     const hadFocus=el.body.contains(document.activeElement);
     el.body.style.height=list.length*H+'px';
-    let h='';for(let i=a;i<b;i++)h+=rowHTML(list[i],i,H);el.body.innerHTML=h;
+    if(force||rs<0){el.body.textContent='';live.clear();}
+    for(const[i,n]of live)if(i<a||i>=b){n.remove();live.delete(i);}
+    let top='',bot='';const tops=[],bots=[];
+    for(let i=a;i<b;i++)if(!live.has(i)){if(live.size&&i<rs){top+=rowHTML(list[i],i,H);tops.push(i);}else{bot+=rowHTML(list[i],i,H);bots.push(i);}}
+    const put=(html,idx,first)=>{if(!html)return;const t=document.createElement('template');t.innerHTML=html;[...t.content.children].forEach((n,k)=>live.set(idx[k],n));first?el.body.prepend(t.content):el.body.append(t.content);};
+    put(top,tops,true);put(bot,bots,false);
+    rs=a;re=b;
     if(!el.body.querySelector('[tabindex="0"]')&&el.body.firstElementChild)el.body.firstElementChild.tabIndex=0;
-    if(hadFocus){const f=el.body.querySelector(`[data-i="${active}"]`);f&&f.focus({preventScroll:true});}
-    AV.domRows=Math.max(AV.domRows||0,b-a);
+    if(hadFocus&&force){const f=live.get(active);f&&f.focus({preventScroll:true});}
+    AV.domRows=Math.max(AV.domRows||0,live.size);
   }
   function setActive(i,focus){if(!list.length)return;active=Math.max(0,Math.min(list.length-1,i));const H=rowH(),top=active*H,vh=el.scroll.clientHeight-headH(),st=el.scroll.scrollTop;
     if(top<st)el.scroll.scrollTop=top;else if(top+H>st+vh)el.scroll.scrollTop=top+H-vh;
