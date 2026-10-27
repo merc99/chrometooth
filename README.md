@@ -23,7 +23,8 @@ The prototype is fully interactive: a marketing site plus a working dashboard de
 - **Check something.** Paste an email, text, job offer or log. The AI returns a verdict, highlights the words behind each finding and flags what's missing.
 - **Privacy audit.** Finds smart TVs (ACR), voice assistants, cameras and thermostats sending data home, with block-at-router or turn-it-off-yourself steps.
 - **Shields.** Job scam filter, AI call screener, scam text filter and per-signup email aliases.
-- **Activity log and incident report.** Every AI finding and human decision is recorded, then drafted into a copyable report.
+- **Activity.** A network log of every connection, DNS lookup and block (2,222 seeded rows). Filter with a small query language (`device:tv verdict:blocked country:CN`) or chips that stay in sync with it, save views, sort, hide columns, select rows to block, trust or export, and open any row's evidence. Only the rows in view are rendered, so it scrolls at 60fps.
+- **Decision log and incident report.** Every AI finding and human decision is recorded, then drafted into a copyable report.
 - **The bite.** Resolving a threat takes a bite out of its card. Enamel, the protection score, climbs to 100% as you clear threats.
 
 ![Evidence linking](docs/evidence.png)

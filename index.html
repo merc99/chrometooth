@@ -651,7 +651,9 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
 .av-sug li small{font-family:var(--ui);font-size:12.5px;color:var(--mute);white-space:nowrap}
 .av-sug li[aria-selected="true"]{background:var(--panel2);box-shadow:inset 2px 0 0 var(--ink)}
 .av-sug li:hover{background:var(--panel2)}
-.av-chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.av-chips{display:flex;flex-wrap:nowrap;align-items:center;gap:8px 12px;overflow-x:auto;scrollbar-width:none;min-width:0;padding:1px}
+.av-chips::-webkit-scrollbar{display:none}
+.av-chips .chipset{flex-wrap:nowrap}
 .chipset{display:inline-flex;flex-wrap:wrap;gap:4px}
 .fchip{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;border:1px solid var(--hair2);border-radius:999px;background:var(--panel);font-size:13px;color:var(--ink2);white-space:nowrap;transition:background .15s,color .15s,border-color .15s}
 .fchip:hover{border-color:var(--faint);color:var(--ink)}
@@ -660,8 +662,7 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
 .fchip.tok{font-family:var(--mono);font-size:12.5px;border-style:dashed}
 .fchip svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
 .pop-wrap{position:relative}
-.pop{position:absolute;z-index:30;top:calc(100% + 6px);left:0;min-width:240px;max-height:min(420px,70vh);overflow:auto;padding:8px;background:var(--panel);border:1px solid var(--hair2);border-radius:14px;box-shadow:0 20px 40px -20px rgba(13,14,18,.35)}
-.av-row2 .pop{left:auto;right:0}
+.pop{position:fixed;z-index:60;min-width:272px;max-height:min(420px,70vh);overflow:auto;padding:8px;background:var(--panel);border:1px solid var(--hair2);border-radius:14px;box-shadow:0 20px 40px -20px rgba(13,14,18,.35)}
 .pop-h{margin:4px 8px 6px;font-size:12.5px;font-weight:600;color:var(--mute)}
 .pop-note{margin:4px 8px 10px;font-size:13.5px;color:var(--mute)}
 .ck{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 8px;border-radius:8px;font-size:14px;cursor:pointer}
@@ -692,7 +693,7 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 
 /* the table: sticky header and first columns, windowed rows */
-.av-scroll{position:relative;flex:1 1 0;min-height:0;overflow:auto;overscroll-behavior:contain;border-top:1px solid var(--hair);border-radius:0 0 16px 16px;scrollbar-color:var(--hair2) transparent}
+.av-scroll{position:relative;flex:1 1 0;min-height:0;overflow:auto;scrollbar-gutter:stable;overscroll-behavior:contain;border-top:1px solid var(--hair);border-radius:0 0 16px 16px;scrollbar-color:var(--hair2) transparent}
 .av-grid{--rh:40px;min-width:var(--minw);font-size:13.5px;color:var(--ink2)}
 .av-hr,.av-r{display:grid;grid-template-columns:var(--cols);align-items:center}
 .av-hr{position:sticky;top:0;z-index:5;height:38px;background:var(--panel2);border-bottom:1px solid var(--hair2)}
@@ -752,9 +753,7 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
 @media (max-width:760px){
   .av-sum{padding:16px}.av-kpis{gap:12px 16px}.av-kpis b{font-size:21px}
   .av-chart .ph .meta{display:none}
-  .av-chips{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px;padding:2px 16px 4px;scrollbar-width:none}
-  .av-chips .chipset{flex-wrap:nowrap}
-  .av-chips::-webkit-scrollbar{display:none}
+  .av-chips{margin:0 -16px;padding:2px 16px 4px}
   .av-search kbd,.seg,.av-colw{display:none}
   .av-sortm{display:inline-flex}
   .av-bar2{height:56px}
@@ -2046,15 +2045,13 @@ const AV=(()=>{
   function renderChips(){
     const lastT=q.terms.find(t=>t.key==='last'&&!t.neg),hourT=q.terms.find(t=>t.key==='hour'&&!t.neg);
     const devs=q.terms.filter(t=>t.key==='device'&&!t.neg).map(t=>t.val);
-    const shown=new Set(['verdict','last','hour','device']);
-    const others=q.terms.map((t,i)=>[t,i]).filter(([t])=>!shown.has(t.key)||t.neg);
     const vchip=v=>`<button class="fchip" data-verdict="${v}" aria-pressed="${has('verdict',v)}" style="--c:${VCOL[v][0]}"><i></i>${cap(v)}</button>`;
     const tchip=(v,l)=>`<button class="fchip" data-last="${v}" aria-pressed="${!hourT&&(lastT?lastT.val===v:v==='24h')}">${l}</button>`;
     el.chips.innerHTML=`<div class="chipset" role="group" aria-label="Verdict">${['allowed','flagged','blocked'].map(vchip).join('')}</div>
       <div class="pop-wrap"><button class="fchip" id="avDevB" aria-haspopup="true" aria-expanded="false" aria-controls="avDevP" aria-pressed="${devs.length>0}">Device: ${devs.length?esc(devs.length>1?devs.length+' selected':devs[0]):'Any'}<svg class="cv" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3"/></svg></button>
         <div class="pop" id="avDevP" hidden><p class="pop-h">Show devices</p>${DEV.map(d=>`<label class="ck"><input type="checkbox" data-dev="${d.name}" ${has('device',d.name)?'checked':''}>${d.name}<small>${d.kind}</small></label>`).join('')}</div></div>
       <div class="chipset" role="group" aria-label="Time range">${tchip('24h','24 hours')}${tchip('6h','6 hours')}${tchip('1h','1 hour')}${hourT?`<button class="fchip" aria-pressed="true" data-clearhour aria-label="Hour ${hh(+hourT.val)} to ${hh((+hourT.val+1)%24)}, remove">${hh(+hourT.val)}–${hh((+hourT.val+1)%24)}<svg class="x" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 3.5l5 5M8.5 3.5l-5 5"/></svg></button>`:''}</div>
-      ${others.map(([t,i])=>`<button class="fchip tok" data-rm="${i}" aria-label="Remove ${esc((t.neg?'not ':'')+t.key+' '+t.val)}">${esc((t.neg?'-':'')+t.key+':'+t.val)}<svg class="x" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 3.5l5 5M8.5 3.5l-5 5"/></svg></button>`).join('')}`;
+`;
   }
 
   /* suggestions as you type */
@@ -2211,7 +2208,10 @@ const AV=(()=>{
 
   /* popovers */
   function popToggle(btn,pop,open){open=open??pop.hidden;$$('.actv .pop').forEach(p=>{if(p!==pop&&!p.hidden){p.hidden=true;const b=document.querySelector(`[aria-controls="${p.id}"]`);b&&b.setAttribute('aria-expanded','false');}});
-    pop.hidden=!open;btn.setAttribute('aria-expanded',open);if(open){const f=pop.querySelector('input,button');f&&f.focus();}}
+    pop.hidden=!open;btn.setAttribute('aria-expanded',open);
+    if(open){if(!phone()){const r=btn.getBoundingClientRect(),w=pop.offsetWidth;pop.style.top=r.bottom+6+'px';pop.style.left=Math.max(8,Math.min(innerWidth-w-8,btn.closest('.av-row2')?r.right-w:r.left))+'px';}
+      const f=pop.querySelector('input,button');f&&f.focus();}}
+  function popClose(){$$('.actv .pop').forEach(p=>{if(!p.hidden){p.hidden=true;const b=document.querySelector(`[aria-controls="${p.id}"]`);b&&b.setAttribute('aria-expanded','false');}});}
   function renderViews(){const cur=serialize(q);
     el.views.innerHTML=`<p class="pop-h">Saved views</p>${views.length?`<ul class="vw">${views.map((v,i)=>`<li><button class="vw-a" data-view="${i}"${v.q===cur?' aria-current="true"':''}><span>${esc(v.n)}</span><small>${esc(v.q)}</small></button><button class="icon-btn vw-x" data-delview="${i}" aria-label="Delete the view ${esc(v.n)}"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg></button></li>`).join('')}</ul>`:'<p class="pop-note">No saved views yet.</p>'}
       <form class="vw-save" id="avSave"><label for="avVName">Save the current filters</label><div><input id="avVName" maxlength="40" placeholder="${cur?'Name this view':'Add a filter first'}" ${cur?'':'disabled'}><button class="btn btn-ink btn-sm" ${cur?'':'disabled'}>Save</button></div></form>`;}
@@ -2256,6 +2256,7 @@ const AV=(()=>{
     el.chips.addEventListener('change',e=>{const c=e.target.closest('[data-dev]');if(!c)return;toggleTerm('device',c.dataset.dev);
       const p=$id('avDevP');p.hidden=false;$id('avDevB').setAttribute('aria-expanded','true');p.querySelector(`[data-dev="${c.dataset.dev}"]`).focus();});
     // table
+    addEventListener('resize',popClose);el.chips.addEventListener('scroll',popClose,{passive:true});
     el.scroll.addEventListener('scroll',()=>{if(!AV.raf)AV.raf=requestAnimationFrame(()=>{AV.raf=0;renderRows();});},{passive:true});
     new ResizeObserver(()=>{if(view==='activity')renderRows(true);}).observe(el.scroll);
     el.head.addEventListener('click',e=>{const b=e.target.closest('[data-sort]');if(b){const k=b.dataset.sort;sort=sort.k===k?{k,dir:-sort.dir}:{k,dir:k==='time'||COLS.find(c=>c.k===k).num?-1:1};sortRows();renderHead();apply();

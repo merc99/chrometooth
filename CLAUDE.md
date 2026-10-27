@@ -13,7 +13,8 @@ Portfolio prototype by Ben Woods (benwoods.art, github.com/merc99). It's a singl
 ## Project notes
 
 - The page is self-contained by design. Keep it a single file unless asked otherwise.
-- `#app` in the URL opens the dashboard. Everything else is the marketing site.
+- `#app` in the URL opens the dashboard and `#app/activity` opens the Activity log. Everything else is the marketing site.
+- Activity data comes from `buildRows()`, seeded with mulberry32, so it is identical on every load. Query syntax lives in `parseQuery()` / `compile()`; the view is the `AV` module.
 - Theme: the user's light/dark choice is stored in localStorage key `ct-mode` and applied as `body.ct-dark` / `body.ct-light`.
 - Demo data is fictional. IPs use 192.0.2.x, 198.51.100.x and 203.0.113.x, and phone numbers use 555-01xx.
 - `assets/` holds the fang render and wordmark SVG for reuse (OG image, favicon, portfolio thumbnail).
