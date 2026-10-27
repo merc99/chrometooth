@@ -632,7 +632,7 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
 .hb .a{background:var(--av-allowed)}.hb .f{background:var(--high)}.hb .b{background:var(--ok)}
 .hb:hover{background:color-mix(in srgb,var(--ink) 5%,transparent)}
 .hb[aria-pressed="true"]{background:color-mix(in srgb,var(--ink) 8%,transparent)}
-.av-bars.has-on .hb:not([aria-pressed="true"]) .st{opacity:.35}
+.av-bars.has-on .hb:not([aria-pressed="true"]) .st,.hb.out .st{opacity:.3}
 .hb:focus-visible{outline-offset:1px}
 .av-axis{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums}
 .av-chart .legend{margin-top:8px}
@@ -737,10 +737,10 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
 .av-empty .ex{justify-content:center;margin:14px 0 0}
 
 /* phones: each row becomes a card with device, destination and verdict */
-.av-grid.cards{min-width:0}
-.av-grid.cards .av-head{display:none}
-.av-r.card{grid-template-columns:44px minmax(0,1fr);align-items:stretch}
-.av-r.card .c-sel{position:static}
+.av-grid.av-cards{min-width:0}
+.av-grid.av-cards .av-head{display:none}
+.av-r.av-card{grid-template-columns:44px minmax(0,1fr);align-items:stretch}
+.av-r.av-card .c-sel{position:static}
 .card-b{display:grid;align-content:center;gap:4px;padding:10px 14px 10px 0;white-space:normal}
 .card-b .l1{display:flex;justify-content:space-between;gap:10px;font-size:14px;color:var(--ink)}
 .card-b .l1 b{font-weight:600}
@@ -753,6 +753,7 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
   .av-sum{padding:16px}.av-kpis{gap:12px 16px}.av-kpis b{font-size:21px}
   .av-chart .ph .meta{display:none}
   .av-chips{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px;padding:2px 16px 4px;scrollbar-width:none}
+  .av-chips .chipset{flex-wrap:nowrap}
   .av-chips::-webkit-scrollbar{display:none}
   .av-search kbd,.seg,.av-colw{display:none}
   .av-sortm{display:inline-flex}
@@ -1031,7 +1032,7 @@ mark.ev.on{background:color-mix(in srgb,var(--mc) 32%,transparent)}
         <div class="av-row2" id="avRow2">
           <span class="av-count" id="avCount"></span>
           <span class="sp"></span>
-          <label class="av-sortm">Sort <select id="avSortM"><option value="time:-1">Newest first</option><option value="time:1">Oldest first</option><option value="sent:-1">Most data sent</option><option value="sev:-1">Most severe</option><option value="device:1">Device</option></select></label>
+          <label class="av-sortm"><span class="sr">Sort</span><select id="avSortM"><option value="time:-1">Newest first</option><option value="time:1">Oldest first</option><option value="sent:-1">Most data sent</option><option value="sev:-1">Most severe</option><option value="device:1">Device</option></select></label>
           <div class="seg" id="avDensity" role="group" aria-label="Row density"><button data-d="comfortable" aria-pressed="true">Comfortable</button><button data-d="compact" aria-pressed="false">Compact</button></div>
           <div class="pop-wrap"><button class="btn btn-line btn-sm" id="avViewsB" aria-haspopup="true" aria-expanded="false" aria-controls="avViews">Views</button><div class="pop" id="avViews" hidden></div></div>
           <div class="pop-wrap av-colw"><button class="btn btn-line btn-sm" id="avColsB" aria-haspopup="true" aria-expanded="false" aria-controls="avCols">Columns</button><div class="pop" id="avCols" hidden></div></div>
@@ -2038,7 +2039,7 @@ const AV=(()=>{
 
   /* query <-> chips: the parsed query is the one source of truth. Typing parses the text into it;
      chips edit it and write the text back. */
-  function setTerms(fn){fn(q.terms);el.q.value=serialize(q);apply();}
+  function setTerms(fn){fn(q.terms);el.q.value=serialize(q);renderChips();apply();}
   const has=(key,val)=>q.terms.some(t=>t.key===key&&!t.neg&&t.val.toLowerCase()===val.toLowerCase());
   function toggleTerm(key,val){setTerms(T=>{const i=T.findIndex(t=>t.key===key&&!t.neg&&t.val.toLowerCase()===val.toLowerCase());i>=0?T.splice(i,1):T.push({key,val,neg:false});});}
   function setTime(v){setTerms(T=>{for(let i=T.length-1;i>=0;i--)if(T[i].key==='last'||T[i].key==='hour')T.splice(i,1);if(v)T.push(v);});}
@@ -2097,7 +2098,10 @@ const AV=(()=>{
   /* summary strip */
   function renderSummary(){
     let sent=0,blocked=0;const by=new Map(),bars=HOURS.map(()=>[0,0,0]);
-    for(const r of list){sent+=r.sent;if(r.v==='blocked')blocked++;by.set(r.dom,(by.get(r.dom)||0)+1);bars[HOURS.indexOf(hourOf(r.ts))][r.v==='allowed'?0:r.v==='flagged'?1:2]++;}
+    for(const r of list){sent+=r.sent;if(r.v==='blocked')blocked++;by.set(r.dom,(by.get(r.dom)||0)+1);}
+    const ctx=compile({terms:q.terms.filter(t=>t.key!=='hour'&&t.key!=='last'),text:q.text}),lastT=q.terms.find(t=>t.key==='last'&&!t.neg),since=lastT?-(LAST[lastT.val]||86400):-Infinity;
+    for(const r of rows)if(ctx(r))bars[HOURS.indexOf(hourOf(r.ts))][r.v==='allowed'?0:r.v==='flagged'?1:2]++;
+    el.bars.dataset.since=since;
     let top=null,tn=0;by.forEach((n,d)=>{if(n>tn){tn=n;top=d;}});
     el.kc.textContent=N(list.length);el.ks.textContent=fmtB(sent);el.ks.title=exactB(sent);el.kb.textContent=N(blocked);
     el.kt.innerHTML=top?`<span class="dom">${esc(top)}</span><small>${N(tn)} connections</small>`:'<span class="dom">None</span><small>&nbsp;</small>';
@@ -2105,7 +2109,7 @@ const AV=(()=>{
     el.bars.classList.toggle('has-on',on>=0);
     [...el.bars.children].forEach((b,i)=>{const[a,f,k]=bars[i],tot=a+f+k,h=HOURS[i],st=b.firstChild;
       st.style.height=(tot/max*100)+'%';st.children[0].style.flexGrow=a;st.children[1].style.flexGrow=f;st.children[2].style.flexGrow=k;
-      b.dataset.n=[a,f,k].join(',');b.setAttribute('aria-pressed',h===on);
+      b.dataset.n=[a,f,k].join(',');b.setAttribute('aria-pressed',h===on);b.classList.toggle('out',(i===23?0:-1920-(22-i)*3600)<=since);
       b.setAttribute('aria-label',`${hh(h)} to ${hh((h+1)%24)}${i===23?' (now)':''}: ${N(tot)} connections, ${N(a)} allowed, ${N(f)} flagged, ${N(k)} blocked`);});
   }
   function barTip(b){const i=+b.dataset.i,h=HOURS[i],[a,f,k]=b.dataset.n.split(',').map(Number),r=b.getBoundingClientRect();
@@ -2123,7 +2127,7 @@ const AV=(()=>{
     syncAll();}
   function rowHTML(r,i,H){const s=sel.has(r.id),cl=`av-r${s?' sel':''}${r.v==='flagged'?' fl':''}`,lab=`${hms(r.ts)} ${DEV[r.dev].name} ${r.dom}`;
     const cb=`<span class="c c-sel" role="gridcell"><input type="checkbox" tabindex="-1" aria-label="Select ${esc(lab)}"${s?' checked':''}></span>`;
-    if(phone())return`<div class="${cl} card" role="row" aria-rowindex="${i+2}" aria-selected="${s}" data-i="${i}" tabindex="${i===active?0:-1}" style="top:${i*H}px">${cb}<span class="c card-b" role="gridcell"><span class="l1"><b>${DEV[r.dev].name}</b><time>${hms(r.ts)}</time></span><span class="l2"><span class="dom">${esc(r.dom)}</span>${mark(r)}</span><span class="l3">${vpill(r)}${r.sev?sevm(r.sev):''}<span class="num">${r.dir==='in'?'In':'Out'} · ${r.proto} · ${fmtB(r.sent)} sent</span></span></span></div>`;
+    if(phone())return`<div class="${cl} av-card" role="row" aria-rowindex="${i+2}" aria-selected="${s}" data-i="${i}" tabindex="${i===active?0:-1}" style="top:${i*H}px">${cb}<span class="c card-b" role="gridcell"><span class="l1"><b>${DEV[r.dev].name}</b><time>${hms(r.ts)}</time></span><span class="l2"><span class="dom">${esc(r.dom)}</span>${mark(r)}</span><span class="l3">${vpill(r)}${r.sev?sevm(r.sev):''}<span class="num">${r.dir==='in'?'In':'Out'} · ${r.proto} · ${fmtB(r.sent)} sent</span></span></span></div>`;
     return`<div class="${cl}" role="row" aria-rowindex="${i+2}" aria-selected="${s}" data-i="${i}" tabindex="${i===active?0:-1}" style="top:${i*H}px">${cb}<span class="c c-time" role="gridcell">${hms(r.ts)}</span>${cols().map(c=>`<span class="c c-${c.k}${c.num?' num':''}" role="gridcell">${c.cell(r)}</span>`).join('')}</div>`;}
   // Windowing: the body is as tall as every row would be, but only the rows in view (plus a few either side) exist.
   function renderRows(force){
@@ -2285,10 +2289,10 @@ const AV=(()=>{
     el.bulk.addEventListener('click',e=>{const b=e.target.closest('[data-bulk]');if(!b)return;const doms=[...new Set(selRows().map(r=>r.dom))];
       if(b.dataset.bulk==='block')blockDomains(doms,()=>{sel.clear();afterSel();});else if(b.dataset.bulk==='trust'){trustDomains(doms);sel.clear();afterSel();}
       else if(b.dataset.bulk==='csv')exportCsv();else{sel.clear();afterSel();el.body.querySelector('[tabindex="0"]')?.focus();}});
-    phoneMQ.addEventListener('change',()=>{el.grid.classList.toggle('cards',phone());el.grid.style.setProperty('--rh',rowH()+'px');renderHead();rs=re=-1;renderRows(true);});
+    phoneMQ.addEventListener('change',()=>{el.grid.classList.toggle('av-cards',phone());el.grid.style.setProperty('--rh',rowH()+'px');renderHead();rs=re=-1;renderRows(true);});
   }
   function show(){
-    if(!built){built=true;build();wire();el.grid.classList.toggle('compact',density==='compact');el.grid.classList.toggle('cards',phone());
+    if(!built){built=true;build();wire();el.grid.classList.toggle('compact',density==='compact');el.grid.classList.toggle('av-cards',phone());
       $$('#avDensity button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.d===density));renderHead();renderChips();apply();}
     el.grid.style.setProperty('--rh',rowH()+'px');
     requestAnimationFrame(()=>{renderRows(true);consume();});
